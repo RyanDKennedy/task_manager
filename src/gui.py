@@ -85,17 +85,18 @@ class GUI():
         self.delete_btn.pack()
 
     def delete_current_record(self):
-        id = self.records[self.selected_record_index][0]
-        self.db.delete(id)
-        self.records = self.db.get_all_records()
-        self.refresh_display()
-
+        if (len(self.records) > 0):
+            id = self.records[self.selected_record_index][0]
+            self.db.delete(id)
+            self.records = self.db.get_all_records()
+            self.refresh_display()
+            
     def update_current_record(self):
-        record = [self.records[self.selected_record_index][0], self.name_ent.get(), self.age_ent.get(), self.gender_val.get()]
-
-        self.db.update(record)
-        self.records = self.db.get_all_records()
-        self.refresh_display()
+        if (len(self.records) > 0):
+            record = [self.records[self.selected_record_index][0], self.name_ent.get(), self.age_ent.get(), self.gender_val.get()]
+            self.db.update(record)
+            self.records = self.db.get_all_records()
+            self.refresh_display()
 
     def start_insert_record(self):
         self.inserting_record = 1
