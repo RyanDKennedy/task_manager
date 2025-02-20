@@ -1,27 +1,29 @@
+import mysql.connector
 import random
 
 class Database():
 
     def __init__(self):
-        self.records = [[1, "Ryan K", 18, "Male"], [3, "Chris C", 18, "Male"], [20, "John Wick", 60, "Male"]]
+        self.table_name = "test"
+        self.conn = mysql.connector.connect(host = "192.168.0.100", user = "student", passwd = "jchs", database = "RyanKennedyAndGabrielWaldner")
+        self.cursor = self.conn.cursor()
+
+    def __del__(self):
+        self.conn.commit()
+        self.conn.close()
 
     def get_all_records(self):
-        return self.records
+        self.cursor.execute("SELECT * FROM {};".format(self.table_name));
+        return self.cursor.fetchall();
 
     def update(self, record):
-        for i in range(0, len(self.records)):
-            if (self.records[i][0] == record[0]):
-                self.records[i] = record
-                break
+        self.cursor.execute("UPDATE {} SET name='{}', age={}, gender='{}' WHERE id={};".format(self.table_name, record[1], record[2], record[3], record[0]))
 
     def insert(self, record):
-        self.records.append([int(random.random() * 1000), record[1], record[2], record[3]])
+        self.cursor.execute("INSERT INTO {} (name, age, gender) VALUES('{}', {}, '{}');".format(self.table_name, record[1], record[2], record[3]))
 
     def delete(self, id):
-        for i in range(0, len(self.records)):
-            if (self.records[i][0] == id):
-                del self.records[i]
-                break
+        self.cursor.execute("DELETE FROM {} WHERE id={};".format(self.table_name, id))
 
 
 
