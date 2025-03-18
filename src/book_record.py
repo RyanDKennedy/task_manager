@@ -1,3 +1,10 @@
+"""
+Ryan Kennedy, Gabriel Walder
+Cmdr. Schenk
+Cloud Computing
+7th Period
+March 18, 2025
+"""
 
 # CREATE TABLE books (
 #     id integer auto_increment unique not null,
