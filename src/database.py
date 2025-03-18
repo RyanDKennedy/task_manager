@@ -27,7 +27,7 @@ class Database():
 
     def __init__(self):
         # self.conn = mysql.connector.connect(host = "192.168.0.100", user = "student", passwd = "jchs", database = "RyanKennedyAndGabrielWaldner")
-        self.conn = mysql.connector.connect(host = "127.0.0.1", user = "root", passwd = "mysqlpassword", database = "RyanKennedyAndGabrielWaldner")
+        self.conn = mysql.connector.connect(host = "127.0.0.1", user = "root", passwd = "ryansmiles", database = "RyanKennedyAndGabrielWaldner")
         self.cursor = self.conn.cursor()
 
     def __del__(self):

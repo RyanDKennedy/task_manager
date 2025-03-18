@@ -112,11 +112,12 @@ class GUI():
         self.authors_birth_year_ent.insert(0, str(record.birth_year))
 
     def authors_insert_record(self):
-        rec = AuthorRecord()
-        rec.fill(-1, self.authors_name_ent.get(), int(self.authors_birth_year_ent.get()))
-        self.db.authors_insert(rec)
-        self.authors_records = self.db.authors_get_all_records()
-        self.refresh_display()
+        if (self.authors_validate_input() == True):
+            rec = AuthorRecord()
+            rec.fill(-1, self.authors_name_ent.get(), int(self.authors_birth_year_ent.get()))
+            self.db.authors_insert(rec)
+            self.authors_records = self.db.authors_get_all_records()
+            self.refresh_display()
 
     def authors_delete_current_record(self):
         current_record = self.authors_records[self.authors_selected_record_index]
@@ -126,11 +127,28 @@ class GUI():
         self.refresh_display()
 
     def authors_update_current_record(self):
-        rec = AuthorRecord()
-        rec.fill(self.authors_records[self.authors_selected_record_index].id, self.authors_name_ent.get(), int(self.authors_birth_year_ent.get()))
-        self.db.authors_update(rec)
-        self.authors_records = self.db.authors_get_all_records()
-        self.refresh_display()
+        if (self.authors_validate_input() == True):
+            rec = AuthorRecord()
+            rec.fill(self.authors_records[self.authors_selected_record_index].id, self.authors_name_ent.get(), int(self.authors_birth_year_ent.get()))
+            self.db.authors_update(rec)
+            self.authors_records = self.db.authors_get_all_records()
+            self.refresh_display()
+
+    def authors_validate_input(self):
+        name_text = self.authors_name_ent.get()
+        birth_year_text = self.authors_birth_year_ent.get()
+        
+        if (self.is_character_in_string(name_text, '\'') or self.is_character_in_string(name_text, ';') or self.is_character_in_string(birth_year_text, '\'') or self.is_character_in_string(birth_year_text, ';')):
+            self.feedback_lbl["text"] = "You cannot have ' or ; in your inputs."
+            return False
+
+        try:
+            birth_year_num = int(birth_year_text)
+        except:
+            self.feedback_lbl["text"] = "Birth year has to be a valid number."
+            return False
+
+        return True
 
     # ==== Books Stuff ====
 
@@ -251,12 +269,13 @@ class GUI():
         return int(arr[0])
 
     def books_insert_record(self):
-        rec = BookRecord()
-        rec.fill(-1, self.books_name_ent.get(), int(self.books_year_released_ent.get()), int(self.books_page_amt_ent.get()), float(self.books_price_ent.get()), self.books_get_author_id_from_cbx_value(self.books_author_val.get()))
-        self.db.books_insert(rec)
-        self.books_records = self.db.books_get_all_records()
-        self.refresh_display()
-
+        if (self.books_validate_input() == True):
+            rec = BookRecord()
+            rec.fill(-1, self.books_name_ent.get(), int(self.books_year_released_ent.get()), int(self.books_page_amt_ent.get()), float(self.books_price_ent.get()), self.books_get_author_id_from_cbx_value(self.books_author_val.get()))
+            self.db.books_insert(rec)
+            self.books_records = self.db.books_get_all_records()
+            self.refresh_display()
+            
     def books_delete_current_record(self):
         current_record = self.books_records[self.books_selected_record_index]
         self.db.books_delete(current_record.id)
@@ -264,11 +283,38 @@ class GUI():
         self.refresh_display()
 
     def books_update_current_record(self):
-        rec = BookRecord()
-        rec.fill(self.books_records[self.books_selected_record_index].id, self.books_name_ent.get(), int(self.books_year_released_ent.get()), int(self.books_page_amt_ent.get()), float(self.books_price_ent.get()), self.books_get_author_id_from_cbx_value(self.books_author_val.get()))
-        self.db.books_update(rec)
-        self.books_records = self.db.books_get_all_records()
-        self.refresh_display()
+        if (self.books_validate_input() == True):
+            rec = BookRecord()
+            rec.fill(self.books_records[self.books_selected_record_index].id, self.books_name_ent.get(), int(self.books_year_released_ent.get()), int(self.books_page_amt_ent.get()), float(self.books_price_ent.get()), self.books_get_author_id_from_cbx_value(self.books_author_val.get()))
+            self.db.books_update(rec)
+            self.books_records = self.db.books_get_all_records()
+            self.refresh_display()
+            
+    def books_validate_input(self):
+        name_text = self.books_name_ent.get()
+        year_released_text = self.books_year_released_ent.get()
+        page_amt_text = self.books_page_amt_ent.get()
+        price_text = self.books_price_ent.get()
+        
+        if (self.is_character_in_string(name_text, '\'') or self.is_character_in_string(name_text, ';') or
+            self.is_character_in_string(year_released_text, '\'') or self.is_character_in_string(year_released_text, ';') or
+            self.is_character_in_string(page_amt_text, '\'') or self.is_character_in_string(page_amt_text, ';') or
+            self.is_character_in_string(price_text, '\'') or self.is_character_in_string(price_text, ';')):
+
+            self.feedback_lbl["text"] = "You cannot have ' or ; in your inputs."
+            return False
+
+        try:
+            year_released = int(year_released_text)
+            page_amt = int(page_amt_text)
+            price = float(price_text)
+        except:
+            self.feedback_lbl["text"] = "Your inputs (year released, page amount, price) aren't valid numbers."
+            return False
+
+        return True
+
+        
 
     def refresh_display(self):
 
@@ -292,3 +338,9 @@ class GUI():
 
         self.authors_display_record_at_index(self.authors_selected_record_index)
         self.books_display_record_at_index(self.books_selected_record_index)
+
+    def is_character_in_string(self, string, character):
+        for c in string:
+            if (c == character):
+                return True
+        return False
