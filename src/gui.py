@@ -135,6 +135,10 @@ class GUI():
             self.refresh_display()
 
     def authors_delete_current_record(self):
+        if (len(self.authors_records) == 0):
+            self.feedback_lbl["text"] = "You cannot delete an author that doesn't exist."
+            return
+
         current_record = self.authors_records[self.authors_selected_record_index]
         self.db.authors_delete(current_record.id)
         self.authors_records = self.db.authors_get_all_records()
@@ -142,12 +146,18 @@ class GUI():
         self.refresh_display()
 
     def authors_update_current_record(self):
-        if (self.authors_validate_input() == True):
-            rec = AuthorRecord()
-            rec.fill(self.authors_records[self.authors_selected_record_index].id, self.authors_name_ent.get(), int(self.authors_birth_year_ent.get()))
-            self.db.authors_update(rec)
-            self.authors_records = self.db.authors_get_all_records()
-            self.refresh_display()
+        if (self.authors_validate_input() == False):
+            return
+
+        if (len(self.authors_records) == 0):
+            self.feedback_lbl["text"] = "You cannot update an author that doesn't exist."
+            return
+
+        rec = AuthorRecord()
+        rec.fill(self.authors_records[self.authors_selected_record_index].id, self.authors_name_ent.get(), int(self.authors_birth_year_ent.get()))
+        self.db.authors_update(rec)
+        self.authors_records = self.db.authors_get_all_records()
+        self.refresh_display()
 
     def authors_validate_input(self):
         name_text = self.authors_name_ent.get()
@@ -255,7 +265,7 @@ class GUI():
         if (len(self.books_records) == 0):
             blank = BookRecord()
             blank.fill(-1, "No Records", 0, 0, 0, -1)
-            self.books_display_record(blank, "No Records")
+            self.books_display_record(blank, "-1 No Records")
             return
 
         if (index < len(self.books_records) and index >= 0):
@@ -287,26 +297,44 @@ class GUI():
         return int(arr[0])
 
     def books_insert_record(self):
-        if (self.books_validate_input() == True):
-            rec = BookRecord()
-            rec.fill(-1, self.books_name_ent.get(), int(self.books_year_released_ent.get()), int(self.books_page_amt_ent.get()), float(self.books_price_ent.get()), self.books_get_author_id_from_cbx_value(self.books_author_val.get()))
-            self.db.books_insert(rec)
-            self.books_records = self.db.books_get_all_records()
-            self.refresh_display()
-            
+        if (self.books_validate_input() == False):
+            return
+
+        author_id = self.books_get_author_id_from_cbx_value(self.books_author_val.get())
+
+        if (author_id == -1):
+            self.feedback_lbl["text"] = "You must have a valid author selected."
+            return
+
+        rec = BookRecord()
+        rec.fill(-1, self.books_name_ent.get(), int(self.books_year_released_ent.get()), int(self.books_page_amt_ent.get()), float(self.books_price_ent.get()), author_id)
+        self.db.books_insert(rec)
+        self.books_records = self.db.books_get_all_records()
+        self.refresh_display()
+        
     def books_delete_current_record(self):
+        if (len(self.books_records) == 0):
+            self.feedback_lbl["text"] = "You cannot delete a book that doesn't exist."
+            return
+
         current_record = self.books_records[self.books_selected_record_index]
         self.db.books_delete(current_record.id)
         self.books_records = self.db.books_get_all_records()
         self.refresh_display()
 
     def books_update_current_record(self):
-        if (self.books_validate_input() == True):
-            rec = BookRecord()
-            rec.fill(self.books_records[self.books_selected_record_index].id, self.books_name_ent.get(), int(self.books_year_released_ent.get()), int(self.books_page_amt_ent.get()), float(self.books_price_ent.get()), self.books_get_author_id_from_cbx_value(self.books_author_val.get()))
-            self.db.books_update(rec)
-            self.books_records = self.db.books_get_all_records()
-            self.refresh_display()
+        if (self.books_validate_input() == False):
+            return
+
+        if (len(self.books_records) == 0):
+            self.feedback_lbl["text"] = "You cannot update a book that doesn't exist."
+            return
+
+        rec = BookRecord()
+        rec.fill(self.books_records[self.books_selected_record_index].id, self.books_name_ent.get(), int(self.books_year_released_ent.get()), int(self.books_page_amt_ent.get()), float(self.books_price_ent.get()), self.books_get_author_id_from_cbx_value(self.books_author_val.get()))
+        self.db.books_update(rec)
+        self.books_records = self.db.books_get_all_records()
+        self.refresh_display()
             
     def books_validate_input(self):
         name_text = self.books_name_ent.get()
