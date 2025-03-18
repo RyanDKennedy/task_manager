@@ -2,184 +2,293 @@ import tkinter as tk
 from tkinter import ttk
 
 from database import Database
+from author_record import AuthorRecord
+from book_record import BookRecord
 
 class GUI():
 
     def __init__(self):
 
         self.root = tk.Tk()
-        self.create_gui_elements()
 
         self.db = Database()
-        self.records = self.db.get_all_records()
-        self.selected_record_index = 0
 
-        # 0 if normal operation, 1 if ready for inserting record
-        self.inserting_record = 0
+        self.authors_records = self.db.authors_get_all_records()
+        self.authors_selected_record_index = 0
+
+        self.books_records = self.db.books_get_all_records()
+        self.books_selected_record_index = 0
+
+        self.feedback_lbl = ttk.Label(self.root, text="")
+        self.feedback_lbl.pack()
+
+        self.authors_create_gui_elements()
+        self.books_create_gui_elements()
 
         self.refresh_display()
 
         self.root.mainloop()
 
 
-    def create_gui_elements(self):
-        # feedback
-        self.feedback_lbl = ttk.Label(self.root, text="")
-        self.feedback_lbl.pack()
+    def authors_create_gui_elements(self):
         
         # record display
+        self.authors_id_lbl = ttk.Label(self.root, text="ID:")
+        self.authors_id_dpy = ttk.Label(self.root, text="")
+        self.authors_id_lbl.pack()
+        self.authors_id_dpy.pack()
+
+        self.authors_name_lbl = ttk.Label(self.root, text="Name:")
+        self.authors_name_ent = ttk.Entry(self.root)
+        self.authors_name_lbl.pack()
+        self.authors_name_ent.pack()
         
-        self.id_lbl = ttk.Label(self.root, text="ID:")
-        self.id_dpy = ttk.Label(self.root, text="")
-        self.id_lbl.pack()
-        self.id_dpy.pack()
+        self.authors_birth_year_lbl = ttk.Label(self.root, text="Birth Year:")
+        self.authors_birth_year_ent = ttk.Entry(self.root)
+        self.authors_birth_year_lbl.pack()
+        self.authors_birth_year_ent.pack()
 
-        self.name_lbl = ttk.Label(self.root, text="Name:")
-        self.name_ent = ttk.Entry(self.root)
-        self.name_lbl.pack()
-        self.name_ent.pack()
-
-        self.age_lbl = ttk.Label(self.root, text="Age:")
-        self.age_ent = ttk.Entry(self.root)
-        self.age_lbl.pack()
-        self.age_ent.pack()
-
-        self.gender_lbl = ttk.Label(self.root, text="Gender:")
-        self.gender_val = tk.StringVar()
-        self.gender_cbx = ttk.Combobox(self.root, textvariable=self.gender_val)
-        self.gender_cbx["values"] = ["Male", "Female"]
-        self.gender_cbx["state"] = "readonly"
-        self.gender_val.set("Male")
-        self.gender_lbl.pack()
-        self.gender_cbx.pack()
 
         # navigation buttons
         
-        self.back_all_btn = ttk.Button(self.root, text="|<", command=lambda: self.increment_selected_record_index(-self.selected_record_index))
-        self.back_all_btn.pack()
+        self.authors_back_all_btn = ttk.Button(self.root, text="|<", command=lambda: self.authors_increment_selected_record_index(-self.authors_selected_record_index))
+        self.authors_back_all_btn.pack()
 
-        self.back_5_btn = ttk.Button(self.root, text="<<", command=lambda: self.increment_selected_record_index(-5))
-        self.back_5_btn.pack()
+        self.authors_back_5_btn = ttk.Button(self.root, text="<<", command=lambda: self.authors_increment_selected_record_index(-5))
+        self.authors_back_5_btn.pack()
 
-        self.back_1_btn = ttk.Button(self.root, text="<", command=lambda: self.increment_selected_record_index(-1))
-        self.back_1_btn.pack()
+        self.authors_back_1_btn = ttk.Button(self.root, text="<", command=lambda: self.authors_increment_selected_record_index(-1))
+        self.authors_back_1_btn.pack()
 
-        self.next_1_btn = ttk.Button(self.root, text=">", command=lambda: self.increment_selected_record_index(1))
-        self.next_1_btn.pack()
+        self.authors_next_1_btn = ttk.Button(self.root, text=">", command=lambda: self.authors_increment_selected_record_index(1))
+        self.authors_next_1_btn.pack()
 
-        self.next_5_btn = ttk.Button(self.root, text=">>", command=lambda: self.increment_selected_record_index(5))
-        self.next_5_btn.pack()
+        self.authors_next_5_btn = ttk.Button(self.root, text=">>", command=lambda: self.authors_increment_selected_record_index(5))
+        self.authors_next_5_btn.pack()
 
-        self.next_all_btn = ttk.Button(self.root, text=">|", command=lambda: self.increment_selected_record_index(len(self.records) - self.selected_record_index))
-        self.next_all_btn.pack()
+        self.authors_next_all_btn = ttk.Button(self.root, text=">|", command=lambda: self.authors_increment_selected_record_index(len(self.authors_records) - self.authors_selected_record_index))
+        self.authors_next_all_btn.pack()
 
         # CRUD
 
-        self.insert_btn = ttk.Button(self.root, text="Start Insert", command=self.start_insert_record)
-        self.insert_btn.pack()
+        self.authors_insert_btn = ttk.Button(self.root, text="Insert", command=self.authors_insert_record)
+        self.authors_insert_btn.pack()
 
-        self.update_btn = ttk.Button(self.root, text="Update", command=self.update_current_record)
-        self.update_btn.pack()
+        self.authors_update_btn = ttk.Button(self.root, text="Update", command=self.authors_update_current_record)
+        self.authors_update_btn.pack()
 
-        self.delete_btn = ttk.Button(self.root, text="Delete", command=self.delete_current_record)
-        self.delete_btn.pack()
+        self.authors_delete_btn = ttk.Button(self.root, text="Delete", command=self.authors_delete_current_record)
+        self.authors_delete_btn.pack()
 
-    def delete_current_record(self):
-        if (len(self.records) > 0):
-            id = self.records[self.selected_record_index][0]
-            self.db.delete(id)
-            self.records = self.db.get_all_records()
-            self.refresh_display()
-            
-    def update_current_record(self):
-        if (len(self.records) > 0):
-            record = [self.records[self.selected_record_index][0], self.name_ent.get(), self.age_ent.get(), self.gender_val.get()]
-            self.db.update(record)
-            self.records = self.db.get_all_records()
-            self.refresh_display()
 
-    def start_insert_record(self):
-        self.inserting_record = 1
-        self.insert_btn["text"] = "Insert"
-        self.insert_btn["command"] = self.insert_record
-        self.refresh_display()
+    def authors_increment_selected_record_index(self, amt):
+        self.authors_selected_record_index += amt
 
-    def insert_record(self):
-        self.inserting_record = 0
-        self.insert_btn["text"] = "Start Insert"
-        self.insert_btn["command"] = self.start_insert_record
+        if (self.authors_selected_record_index >= len(self.authors_records)):
+            self.authors_selected_record_index = len(self.authors_records) - 1
 
-        record = [-1, self.name_ent.get(), self.age_ent.get(), self.gender_val.get()]
-        self.db.insert(record)
-        self.records = self.db.get_all_records()
+        if (self.authors_selected_record_index < 0):
+            self.authors_selected_record_index = 0
 
         self.refresh_display()
 
-    # val = 1 = show buttons, val = 0 = hide buttons
-    def hide_show_nav_buttons(self, val):
-        if (val == 0):
-            self.back_all_btn["state"] = "disabled"
-            self.back_5_btn["state"] = "disabled"
-            self.back_1_btn["state"] = "disabled"
-            self.next_all_btn["state"] = "disabled"
-            self.next_5_btn["state"] = "disabled"
-            self.next_1_btn["state"] = "disabled"
-        elif (val == 1):
-            self.back_all_btn["state"] = "normal"
-            self.back_5_btn["state"] = "normal"
-            self.back_1_btn["state"] = "normal"
-            self.next_all_btn["state"] = "normal"
-            self.next_5_btn["state"] = "normal"
-            self.next_1_btn["state"] = "normal"            
+    def authors_display_record_at_index(self, index):
+        if (len(self.authors_records) == 0):
+            blank = AuthorRecord()
+            blank.fill(-1, "No Records", 0)
+            self.authors_display_record(blank)
+            return
 
-    def increment_selected_record_index(self, amt):
-        self.selected_record_index += amt
+        if (index < len(self.authors_records) and index >= 0):
+            self.authors_display_record(self.authors_records[index])
+        else:
+            self.feedback_lbl["text"] = "ERROR: Tried to display index out of bounds."
+
+    def authors_display_record(self, record):
+        self.authors_id_dpy["text"] = str(record.id)
+        self.authors_name_ent.delete(0, "end")
+        self.authors_name_ent.insert(0, record.name)
+        self.authors_birth_year_ent.delete(0, "end")
+        self.authors_birth_year_ent.insert(0, str(record.birth_year))
+
+    def authors_insert_record(self):
+        rec = AuthorRecord()
+        rec.fill(-1, self.authors_name_ent.get(), int(self.authors_birth_year_ent.get()))
+        self.db.authors_insert(rec)
+        self.authors_records = self.db.authors_get_all_records()
+        self.refresh_display()
+
+    def authors_delete_current_record(self):
+        current_record = self.authors_records[self.authors_selected_record_index]
+        self.db.authors_delete(current_record.id)
+        self.authors_records = self.db.authors_get_all_records()
+        self.books_records = self.db.books_get_all_records()
+        self.refresh_display()
+
+    def authors_update_current_record(self):
+        rec = AuthorRecord()
+        rec.fill(self.authors_records[self.authors_selected_record_index].id, self.authors_name_ent.get(), int(self.authors_birth_year_ent.get()))
+        self.db.authors_update(rec)
+        self.authors_records = self.db.authors_get_all_records()
+        self.refresh_display()
+
+    # ==== Books Stuff ====
+
+    def books_create_gui_elements(self):
+        
+        # record display
+        self.books_id_lbl = ttk.Label(self.root, text="ID:")
+        self.books_id_dpy = ttk.Label(self.root, text="")
+        self.books_id_lbl.pack()
+        self.books_id_dpy.pack()
+
+        self.books_name_lbl = ttk.Label(self.root, text="Name:")
+        self.books_name_ent = ttk.Entry(self.root)
+        self.books_name_lbl.pack()
+        self.books_name_ent.pack()
+
+        self.books_year_released_lbl = ttk.Label(self.root, text="Year Released:")
+        self.books_year_released_ent = ttk.Entry(self.root)
+        self.books_year_released_lbl.pack()
+        self.books_year_released_ent.pack()
+
+        self.books_page_amt_lbl = ttk.Label(self.root, text="Page Amount:")
+        self.books_page_amt_ent = ttk.Entry(self.root)
+        self.books_page_amt_lbl.pack()
+        self.books_page_amt_ent.pack()
+
+        self.books_price_lbl = ttk.Label(self.root, text="Price:")
+        self.books_price_ent = ttk.Entry(self.root)
+        self.books_price_lbl.pack()
+        self.books_price_ent.pack()
+
+        self.books_author_lbl = ttk.Label(self.root, text="Author:")
+        self.books_author_val = tk.StringVar()
+        self.books_author_cbx = ttk.Combobox(self.root, textvariable=self.books_author_val)
+        self.books_author_cbx["values"] = [""]
+        self.books_author_cbx["state"] = "readonly"
+        self.books_author_val.set("")
+        self.books_author_lbl.pack()
+        self.books_author_cbx.pack()
+        
+
+        # navigation buttons
+        
+        self.books_back_all_btn = ttk.Button(self.root, text="|<", command=lambda: self.books_increment_selected_record_index(-self.books_selected_record_index))
+        self.books_back_all_btn.pack()
+
+        self.books_back_5_btn = ttk.Button(self.root, text="<<", command=lambda: self.books_increment_selected_record_index(-5))
+        self.books_back_5_btn.pack()
+
+        self.books_back_1_btn = ttk.Button(self.root, text="<", command=lambda: self.books_increment_selected_record_index(-1))
+        self.books_back_1_btn.pack()
+
+        self.books_next_1_btn = ttk.Button(self.root, text=">", command=lambda: self.books_increment_selected_record_index(1))
+        self.books_next_1_btn.pack()
+
+        self.books_next_5_btn = ttk.Button(self.root, text=">>", command=lambda: self.books_increment_selected_record_index(5))
+        self.books_next_5_btn.pack()
+
+        self.books_next_all_btn = ttk.Button(self.root, text=">|", command=lambda: self.books_increment_selected_record_index(len(self.books_records) - self.books_selected_record_index))
+        self.books_next_all_btn.pack()
+
+        # CRUD
+
+        self.books_insert_btn = ttk.Button(self.root, text="Insert", command=self.books_insert_record)
+        self.books_insert_btn.pack()
+
+        self.books_update_btn = ttk.Button(self.root, text="Update", command=self.books_update_current_record)
+        self.books_update_btn.pack()
+
+        self.books_delete_btn = ttk.Button(self.root, text="Delete", command=self.books_delete_current_record)
+        self.books_delete_btn.pack()
+
+
+    def books_increment_selected_record_index(self, amt):
+        self.books_selected_record_index += amt
+
+        if (self.books_selected_record_index >= len(self.books_records)):
+            self.books_selected_record_index = len(self.books_records) - 1
+
+        if (self.books_selected_record_index < 0):
+            self.books_selected_record_index = 0
+
+        self.refresh_display()
+
+    def books_display_record_at_index(self, index):
+        if (len(self.books_records) == 0):
+            blank = BookRecord()
+            blank.fill(-1, "No Records", 0, 0, 0, -1)
+            self.books_display_record(blank, "No Records")
+            return
+
+        if (index < len(self.books_records) and index >= 0):
+            self.books_display_record(self.books_records[index], self.books_format_cbx_value(self.books_records[index].author_id))
+        else:
+            self.feedback_lbl["text"] = "ERROR: Tried to display index out of bounds."
+
+    def books_display_record(self, record, cbx_value):
+        self.books_id_dpy["text"] = str(record.id)
+        self.books_name_ent.delete(0, "end")
+        self.books_name_ent.insert(0, record.name)
+        self.books_year_released_ent.delete(0, "end")
+        self.books_year_released_ent.insert(0, str(record.year_released))
+        self.books_page_amt_ent.delete(0, "end")
+        self.books_page_amt_ent.insert(0, str(record.page_amt))
+        self.books_price_ent.delete(0, "end")
+        self.books_price_ent.insert(0, str(record.price))
+        self.books_author_val.set(cbx_value)
+
+    def books_format_cbx_value(self, id):
+        for author in self.authors_records:
+            if (author.id == id):
+                return "{} - {}".format(str(id), author.name)        
+
+        return "{} is not a valid id".format(str(id))
+
+    def books_get_author_id_from_cbx_value(self, text):
+        arr = text.split(" ")
+        return int(arr[0])
+
+    def books_insert_record(self):
+        rec = BookRecord()
+        rec.fill(-1, self.books_name_ent.get(), int(self.books_year_released_ent.get()), int(self.books_page_amt_ent.get()), float(self.books_price_ent.get()), self.books_get_author_id_from_cbx_value(self.books_author_val.get()))
+        self.db.books_insert(rec)
+        self.books_records = self.db.books_get_all_records()
+        self.refresh_display()
+
+    def books_delete_current_record(self):
+        current_record = self.books_records[self.books_selected_record_index]
+        self.db.books_delete(current_record.id)
+        self.books_records = self.db.books_get_all_records()
+        self.refresh_display()
+
+    def books_update_current_record(self):
+        rec = BookRecord()
+        rec.fill(self.books_records[self.books_selected_record_index].id, self.books_name_ent.get(), int(self.books_year_released_ent.get()), int(self.books_page_amt_ent.get()), float(self.books_price_ent.get()), self.books_get_author_id_from_cbx_value(self.books_author_val.get()))
+        self.db.books_update(rec)
+        self.books_records = self.db.books_get_all_records()
         self.refresh_display()
 
     def refresh_display(self):
 
-        # if the user is currently inserting a record
-        if (self.inserting_record == 1):
-            self.display_record([-1, "", "", "Male"])
-            self.hide_show_nav_buttons(0)
-            self.update_btn["state"] = "disabled"
-            self.delete_btn["state"] = "disabled"
-            return
+        if (self.authors_selected_record_index >= len(self.authors_records)):
+            self.authors_selected_record_index = len(self.authors_records) - 1
 
+        if (self.authors_selected_record_index < 0):
+            self.authors_selected_record_index = 0
 
-        # if the user is currently not inserting a record
-        self.hide_show_nav_buttons(1)
-        self.update_btn["state"] = "normal"
-        self.delete_btn["state"] = "normal"
+        if (self.books_selected_record_index >= len(self.books_records)):
+            self.books_selected_record_index = len(self.books_records) - 1
 
-        # updates record display and makes sure the selected_record_index is within bounds
-        if (len(self.records) == 0):
-            self.selected_record_index = 0
-            self.display_record([-1, "No Records", "No Records", "No Records"])
-        else:
-            # setting an upper and lower limit for self.selected_record_index to prevent index out of bounds
-            if (self.selected_record_index >= len(self.records)):
-                self.selected_record_index = len(self.records) - 1
-            if (self.selected_record_index < 0):
-                self.selected_record_index = 0
+        if (self.books_selected_record_index < 0):
+            self.books_selected_record_index = 0
 
-            self.display_record_at_index(self.selected_record_index)
-        
+        author_arr = []
+        for author in self.authors_records:
+            author_arr.append("{} - {}".format(author.id, author.name))
 
-    def display_record_at_index(self, index):
-        if (index < len(self.records)):
-            self.display_record(self.records[index])
-        else:
-            self.feedback_lbl["text"] = "ERROR: Tried to display index beyond bounds."
+        self.books_author_cbx["values"] = author_arr
 
-
-    def display_record(self, record):
-        self.id_dpy["text"] = record[0]
-
-        self.name_ent.delete(0, "end")
-        self.name_ent.insert(0, record[1])
-
-        self.age_ent.delete(0, "end")
-        self.age_ent.insert(0, record[2])
-
-        self.gender_val.set(record[3])
+        self.authors_display_record_at_index(self.authors_selected_record_index)
+        self.books_display_record_at_index(self.books_selected_record_index)
