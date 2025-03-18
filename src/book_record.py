@@ -19,6 +19,7 @@ March 18, 2025
 
 class BookRecord:
 
+    # default constructor
     def __init__(self):
         self.id = -1
         self.name = "None"
@@ -27,6 +28,7 @@ class BookRecord:
         self.price = 0
         self.author_id = 0
 
+    # fill the record with values
     def fill(self, id, name, year_released, page_amt, price, author_id):
         self.id = id
         self.name = name

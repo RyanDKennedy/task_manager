@@ -10,8 +10,11 @@ import sys
 from gui import GUI
 
 def main():
+    # start the gui
     gui = GUI()
-    sys.exit(1)
+
+    # exit successfully
+    sys.exit(0)
 
 if (__name__=="__main__"):
     main()

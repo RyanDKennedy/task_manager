@@ -15,11 +15,13 @@ March 18, 2025
 
 class AuthorRecord:
 
+    # default constructor
     def __init__(self):
         self.id = -1
         self.name = "None"
         self.birth_year = 0
 
+    # fill the record with values
     def fill(self, id, name, birth_year):
         self.id = id
         self.name = name

@@ -43,15 +43,17 @@ class Database():
         self.conn.close()
 
     def books_get_all_records(self):
+        # get raw data
         self.cursor.execute("SELECT * FROM books;")
-
         arr_data = self.cursor.fetchall()
 
         result = []
 
+        # return empty array if there is no data to pack into array
         if(len(arr_data) == 0):
             return result
 
+        # pack into array of BookRecord for easier access 
         for record in arr_data:
             rec = BookRecord()
             rec.fill(record[0], record[1], record[2], record[3], record[4], record[5])
@@ -61,23 +63,23 @@ class Database():
 
 
     def authors_get_all_records(self):
+        # get raw data
         self.cursor.execute("SELECT * FROM authors;");
-
         arr_data = self.cursor.fetchall()
 
         result = []
 
+        # return empty array if there is no data to pack into array
         if(len(arr_data) == 0):
             return result
 
+        # pack into array of BookRecord for easier access 
         for record in arr_data:
             rec = AuthorRecord()
             rec.fill(record[0], record[1], record[2])
             result.append(rec)
 
-
         return result
-
 
     def books_insert(self, record):
         self.cursor.execute("INSERT INTO books (name, year_released, page_amt, price, author_id) VALUES ('{}', {}, {}, {}, {});".format(record.name, record.year_released, record.page_amt, record.price, record.author_id))
@@ -95,6 +97,7 @@ class Database():
         self.cursor.execute("DELETE FROM books WHERE id = {};".format(id))
 
     def authors_delete(self, id):
+        # delete books that reference the author then delete the author
         self.cursor.execute("DELETE FROM books WHERE author_id = {};".format(id))
         self.cursor.execute("DELETE FROM authors WHERE id = {};".format(id))
 

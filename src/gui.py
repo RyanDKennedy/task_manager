@@ -17,26 +17,32 @@ class GUI():
 
     def __init__(self):
 
+        # tkinter init
         self.root = tk.Tk()
         self.root.geometry("1000x1000")
 
+        # db init
         self.db = Database()
 
+        # get the records and set navigation defaults
         self.authors_records = self.db.authors_get_all_records()
         self.authors_selected_record_index = 0
-
         self.books_records = self.db.books_get_all_records()
         self.books_selected_record_index = 0
 
+        # create canvas for display
         self.canvas = tk.Canvas(self.root, width=1000, height=1000)
         self.canvas.pack()
 
+        # create label for user feedback
         self.feedback_lbl = ttk.Label(self.root, text="", font=("Helvetica", 14))
         self.feedback_lbl.place(x=500, y=10, anchor="center")
 
+        # create the actual gui
         self.authors_create_gui_elements()
         self.books_create_gui_elements()
 
+        # refreshes the display so the correct things show
         self.refresh_display()
 
         self.root.mainloop()
@@ -44,10 +50,14 @@ class GUI():
 
     def authors_create_gui_elements(self):
 
+        # title
+
         self.authors_display_lbl = ttk.Label(self.root, text="Authors:", font=("Helvetica", 18))
         self.authors_display_lbl.place(x=500,y=35)
         self.canvas.create_rectangle(300, 75, 800, 375, outline="black", width=3)
+
         # record display
+
         self.authors_id_lbl = ttk.Label(self.root, text="ID:", font=("Helvetica", 14))
         self.authors_id_dpy = ttk.Label(self.root, text="", font=("Helvetica", 14))
         self.authors_id_lbl.place(x=475,y=130)
@@ -63,9 +73,8 @@ class GUI():
         self.authors_birth_year_lbl.place(x=460, y=190)
         self.authors_birth_year_ent.place(x=540, y=190)
 
-
         # navigation buttons
-        
+
         self.authors_back_all_btn = ttk.Button(self.root, text="|<", command=lambda: self.authors_increment_selected_record_index(-self.authors_selected_record_index))
         self.authors_back_all_btn.place(x=340, y=220)
 
@@ -108,12 +117,14 @@ class GUI():
         self.refresh_display()
 
     def authors_display_record_at_index(self, index):
+        # display blank record if there are no records
         if (len(self.authors_records) == 0):
             blank = AuthorRecord()
             blank.fill(-1, "No Records", 0)
             self.authors_display_record(blank)
             return
 
+        # check for index out of range
         if (index < len(self.authors_records) and index >= 0):
             self.authors_display_record(self.authors_records[index])
         else:
@@ -127,14 +138,18 @@ class GUI():
         self.authors_birth_year_ent.insert(0, str(record.birth_year))
 
     def authors_insert_record(self):
-        if (self.authors_validate_input() == True):
-            rec = AuthorRecord()
-            rec.fill(-1, self.authors_name_ent.get(), int(self.authors_birth_year_ent.get()))
-            self.db.authors_insert(rec)
-            self.authors_records = self.db.authors_get_all_records()
-            self.refresh_display()
+        # don't insert if input isn't valid
+        if (self.authors_validate_input() == False):
+            return
+
+        rec = AuthorRecord()
+        rec.fill(-1, self.authors_name_ent.get(), int(self.authors_birth_year_ent.get()))
+        self.db.authors_insert(rec)
+        self.authors_records = self.db.authors_get_all_records()
+        self.refresh_display()
 
     def authors_delete_current_record(self):
+        # if there are no authors then you can't delete an author so return
         if (len(self.authors_records) == 0):
             self.feedback_lbl["text"] = "You cannot delete an author that doesn't exist."
             return
@@ -146,9 +161,11 @@ class GUI():
         self.refresh_display()
 
     def authors_update_current_record(self):
+        # don't update if input is not valid
         if (self.authors_validate_input() == False):
             return
 
+        # you cannot update if there are no records
         if (len(self.authors_records) == 0):
             self.feedback_lbl["text"] = "You cannot update an author that doesn't exist."
             return
@@ -163,10 +180,12 @@ class GUI():
         name_text = self.authors_name_ent.get()
         birth_year_text = self.authors_birth_year_ent.get()
         
+        # check for semicolons or quotes to prevent sql injection
         if (self.is_character_in_string(name_text, '\'') or self.is_character_in_string(name_text, ';') or self.is_character_in_string(birth_year_text, '\'') or self.is_character_in_string(birth_year_text, ';')):
             self.feedback_lbl["text"] = "You cannot have ' or ; in your inputs."
             return False
 
+        # see if birth_year_text is a valid integer
         try:
             birth_year_num = int(birth_year_text)
         except:
@@ -179,10 +198,14 @@ class GUI():
 
     def books_create_gui_elements(self):
 
+        # title
+
         self.books_display_lbl = ttk.Label(self.root, text="Books:", font=("Helvetica", 18))
         self.books_display_lbl.place(x=500,y=540)
         self.canvas.create_rectangle(300, 575, 800, 875, outline="black", width=3)
+
         # record display
+
         self.books_id_lbl = ttk.Label(self.root, text="ID:", font=("Helvetica", 14))
         self.books_id_dpy = ttk.Label(self.root, text="", font=("Helvetica", 14))
         self.books_id_lbl.place(x=475,y=590)
@@ -217,7 +240,6 @@ class GUI():
         self.books_author_lbl.place(x=460, y=740)
         self.books_author_cbx.place(x=540, y=740)
         
-
         # navigation buttons
         
         self.books_back_all_btn = ttk.Button(self.root, text="|<", command=lambda: self.books_increment_selected_record_index(-self.books_selected_record_index))
@@ -249,7 +271,6 @@ class GUI():
         self.books_delete_btn = ttk.Button(self.root, text="Delete", command=self.books_delete_current_record)
         self.books_delete_btn.place(x=570, y=800)
 
-
     def books_increment_selected_record_index(self, amt):
         self.books_selected_record_index += amt
 
@@ -262,12 +283,14 @@ class GUI():
         self.refresh_display()
 
     def books_display_record_at_index(self, index):
+        # if there are no records then display empty record
         if (len(self.books_records) == 0):
             blank = BookRecord()
             blank.fill(-1, "No Records", 0, 0, 0, -1)
-            self.books_display_record(blank, "-1 No Records")
+            self.books_display_record(blank, "-1 - No Records")
             return
 
+        # check for index out of bounds
         if (index < len(self.books_records) and index >= 0):
             self.books_display_record(self.books_records[index], self.books_format_cbx_value(self.books_records[index].author_id))
         else:
@@ -285,6 +308,7 @@ class GUI():
         self.books_price_ent.insert(0, str(record.price))
         self.books_author_val.set(cbx_value)
 
+    # format data into the format which the combobox displays
     def books_format_cbx_value(self, id):
         for author in self.authors_records:
             if (author.id == id):
@@ -292,16 +316,18 @@ class GUI():
 
         return "{} is not a valid id".format(str(id))
 
+    # take the combobox display and decode the data from it
     def books_get_author_id_from_cbx_value(self, text):
         arr = text.split(" ")
         return int(arr[0])
 
     def books_insert_record(self):
+        # return if the input is not valid
         if (self.books_validate_input() == False):
             return
 
+        # make sure the author_id is a valid id / not the nonexistent record id
         author_id = self.books_get_author_id_from_cbx_value(self.books_author_val.get())
-
         if (author_id == -1):
             self.feedback_lbl["text"] = "You must have a valid author selected."
             return
@@ -313,6 +339,7 @@ class GUI():
         self.refresh_display()
         
     def books_delete_current_record(self):
+        # if there are no books then you can't delete a book
         if (len(self.books_records) == 0):
             self.feedback_lbl["text"] = "You cannot delete a book that doesn't exist."
             return
@@ -323,9 +350,11 @@ class GUI():
         self.refresh_display()
 
     def books_update_current_record(self):
+        # return if input is not valid
         if (self.books_validate_input() == False):
             return
 
+        # you cannot update a book if there are no books
         if (len(self.books_records) == 0):
             self.feedback_lbl["text"] = "You cannot update a book that doesn't exist."
             return
@@ -342,6 +371,7 @@ class GUI():
         page_amt_text = self.books_page_amt_ent.get()
         price_text = self.books_price_ent.get()
         
+        # make sure none of the inputs contain ' or ; to prevent sql injections
         if (self.is_character_in_string(name_text, '\'') or self.is_character_in_string(name_text, ';') or
             self.is_character_in_string(year_released_text, '\'') or self.is_character_in_string(year_released_text, ';') or
             self.is_character_in_string(page_amt_text, '\'') or self.is_character_in_string(page_amt_text, ';') or
@@ -350,6 +380,7 @@ class GUI():
             self.feedback_lbl["text"] = "You cannot have ' or ; in your inputs."
             return False
 
+        # make sure that all inputs correctly convert to int or float
         try:
             year_released = int(year_released_text)
             page_amt = int(page_amt_text)
@@ -364,6 +395,8 @@ class GUI():
 
     def refresh_display(self):
 
+        # cap indexes between their valid ranges
+
         if (self.authors_selected_record_index >= len(self.authors_records)):
             self.authors_selected_record_index = len(self.authors_records) - 1
 
@@ -376,15 +409,19 @@ class GUI():
         if (self.books_selected_record_index < 0):
             self.books_selected_record_index = 0
 
+        # update the combobox options
+
         author_arr = []
         for author in self.authors_records:
             author_arr.append("{} - {}".format(author.id, author.name))
 
         self.books_author_cbx["values"] = author_arr
 
+        # display the current record
         self.authors_display_record_at_index(self.authors_selected_record_index)
         self.books_display_record_at_index(self.books_selected_record_index)
 
+    # function that sees if a character is in a string
     def is_character_in_string(self, string, character):
         for c in string:
             if (c == character):
