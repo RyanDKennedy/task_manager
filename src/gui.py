@@ -146,7 +146,9 @@ class GUI():
         rec = AuthorRecord()
         rec.fill(-1, self.authors_name_ent.get(), int(self.authors_birth_year_ent.get()))
 
-        result = messagebox.askquestion("Author Insert Confirmation", "Are you sure that you would like to insert this author?\n\n"+rec.to_string())
+        rec_string = "name: "+str(rec.name)+"\n"        
+        rec_string += "birth year: "+str(rec.birth_year)
+        result = messagebox.askquestion("Author Insert Confirmation", "Are you sure that you would like to insert this author?\n\n"+rec_string)
         if (result != "yes"):
             return
 
@@ -351,7 +353,13 @@ class GUI():
         rec = BookRecord()
         rec.fill(-1, self.books_name_ent.get(), int(self.books_year_released_ent.get()), int(self.books_page_amt_ent.get()), float(self.books_price_ent.get()), author_id)
 
-        result = messagebox.askquestion("Book Insert Confirmation", "Are you sure that you would like to insert this book?\n\n"+rec.to_string())
+
+        rec_string = "name: "+str(rec.name)
+        rec_string += "\nyear released: "+str(rec.year_released)
+        rec_string += "\npage amount: "+str(rec.page_amt)
+        rec_string += "\nprice: "+str(rec.price)
+        rec_string += "\nauthor id: "+str(rec.author_id)
+        result = messagebox.askquestion("Book Insert Confirmation", "Are you sure that you would like to insert this book?\n\n"+rec_string)
         if (result != "yes"):
             return
 
