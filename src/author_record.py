@@ -27,4 +27,8 @@ class AuthorRecord:
         self.name = name
         self.birth_year = birth_year
 
-
+    def to_string(self):
+        result = "id: "+str(self.id)+"\n"
+        result += "name: "+str(self.name)+"\n"        
+        result += "birth year: "+str(self.birth_year)
+        return result

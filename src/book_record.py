@@ -36,3 +36,12 @@ class BookRecord:
         self.page_amt = page_amt
         self.price = price
         self.author_id = author_id
+
+    def to_string(self):
+        result = "id: "+str(self.id)
+        result += "\nname: "+str(self.name)
+        result += "\nyear released: "+str(self.year_released)
+        result += "\npage amount: "+str(self.page_amt)
+        result += "\nprice: "+str(self.price)
+        result += "\nauthor id: "+str(self.author_id)
+        return result

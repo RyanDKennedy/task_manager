@@ -8,6 +8,7 @@ March 18, 2025
 
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 
 from database import Database
 from author_record import AuthorRecord
@@ -144,6 +145,11 @@ class GUI():
 
         rec = AuthorRecord()
         rec.fill(-1, self.authors_name_ent.get(), int(self.authors_birth_year_ent.get()))
+
+        result = messagebox.askquestion("Author Insert Confirmation", "Are you sure that you would like to insert this author?\n\n"+rec.to_string())
+        if (result != "yes"):
+            return
+
         self.db.authors_insert(rec)
         self.authors_records = self.db.authors_get_all_records()
         self.refresh_display()
@@ -155,6 +161,11 @@ class GUI():
             return
 
         current_record = self.authors_records[self.authors_selected_record_index]
+
+        result = messagebox.askquestion("Author Delete Confirmation", "Are you sure that you would like to delete this author, and all the books associated with them?\n\n"+current_record.to_string())
+        if (result != "yes"):
+            return
+
         self.db.authors_delete(current_record.id)
         self.authors_records = self.db.authors_get_all_records()
         self.books_records = self.db.books_get_all_records()
@@ -172,6 +183,11 @@ class GUI():
 
         rec = AuthorRecord()
         rec.fill(self.authors_records[self.authors_selected_record_index].id, self.authors_name_ent.get(), int(self.authors_birth_year_ent.get()))
+
+        result = messagebox.askquestion("Author Update Confirmation", "Are you sure that you would like to update this author?\n\nBefore:\n"+self.authors_records[self.authors_selected_record_index].to_string()+"\n\nAfter:\n"+rec.to_string())
+        if (result != "yes"):
+            return
+
         self.db.authors_update(rec)
         self.authors_records = self.db.authors_get_all_records()
         self.refresh_display()
@@ -334,6 +350,11 @@ class GUI():
 
         rec = BookRecord()
         rec.fill(-1, self.books_name_ent.get(), int(self.books_year_released_ent.get()), int(self.books_page_amt_ent.get()), float(self.books_price_ent.get()), author_id)
+
+        result = messagebox.askquestion("Book Insert Confirmation", "Are you sure that you would like to insert this book?\n\n"+rec.to_string())
+        if (result != "yes"):
+            return
+
         self.db.books_insert(rec)
         self.books_records = self.db.books_get_all_records()
         self.refresh_display()
@@ -345,6 +366,11 @@ class GUI():
             return
 
         current_record = self.books_records[self.books_selected_record_index]
+
+        result = messagebox.askquestion("Book Delete Confirmation", "Are you sure that you would like to delete this book?\n\n"+current_record.to_string())
+        if (result != "yes"):
+            return
+
         self.db.books_delete(current_record.id)
         self.books_records = self.db.books_get_all_records()
         self.refresh_display()
@@ -361,6 +387,11 @@ class GUI():
 
         rec = BookRecord()
         rec.fill(self.books_records[self.books_selected_record_index].id, self.books_name_ent.get(), int(self.books_year_released_ent.get()), int(self.books_page_amt_ent.get()), float(self.books_price_ent.get()), self.books_get_author_id_from_cbx_value(self.books_author_val.get()))
+
+        result = messagebox.askquestion("Book Update Confirmation", "Are you sure that you would like to update this book?\n\nBefore:\n"+self.books_records[self.books_selected_record_index].to_string()+"\n\nAfter:\n"+rec.to_string())
+        if (result != "yes"):
+            return
+
         self.db.books_update(rec)
         self.books_records = self.db.books_get_all_records()
         self.refresh_display()
