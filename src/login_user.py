@@ -9,6 +9,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 
+import bcrypt
+
 from user_record import UserRecord
 from task_record import TaskRecord
 from database import Database
@@ -20,11 +22,40 @@ class LoginUser:
         self.db = db
 
     def init_resources(self):
-        self.username_lbl = tk.Label(self.frame, text="Username:").pack()
-        self.password_lbl = tk.Label(self.frame, text="Password:").pack()
-        self.username_ent = tk.Entry(self.frame).pack()
-        self.password_ent = tk.Entry(self.frame).pack()
-        tk.Button(self.frame, text="Register", command=self.goto_register_user).pack()
+        # username
+        tk.Label(self.frame, text="Username:").pack()
+        self.username_ent = tk.Entry(self.frame)
+        self.username_ent.pack()
+
+        # password
+        tk.Label(self.frame, text="Password:").pack()
+        self.password_ent = tk.Entry(self.frame)
+        self.password_ent.pack()
+
+        # buttons
+        tk.Button(self.frame, text="Login", command=self.login).pack()
+        tk.Button(self.frame, text="Goto User Register", command=self.goto_register_user).pack()
+
+    def login(self):
+        record = UserRecord()
+        password = self.password_ent.get()
+        hashed_password = bcrypt.hashpw(password.encode(), b'$2b$12$zm4/D56Ntli/hWPKnmLSgu')
+        record.fill(-1, "", self.username_ent.get(), hashed_password)
+
+        users = self.db.users_get_all_records()
+
+        user_id = -1
+
+        for user in users:
+            if (user.username == record.username and user.hashed_password == record.hashed_password):
+                user_id = user.id
+                break
+
+        if (user_id == -1):
+            print("invalid credentials")
+            return
+
+        print("valid crendentials")
 
     def goto_register_user(self):
         self.hide()

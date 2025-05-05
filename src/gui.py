@@ -43,6 +43,7 @@ class GUI():
         self.task_browser = TaskBrowser(self.root, self.db)
 
         # a map that stores the functions to show the different states so that a button in one state can change to another state
+        # classes as strings map to functions
         show_map = {
             "RegisterUser" : self.register_user.show,
             "LoginUser" : self.login_user.show,
