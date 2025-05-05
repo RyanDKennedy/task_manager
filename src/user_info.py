@@ -11,5 +11,11 @@ from tkinter import messagebox
 
 class UserInfo:
 
-    def __init__(self, frame):
-        self.frame = frame;
+    def __init__(self, root):
+        self.frame = tk.Frame(root);
+
+    def show(self):
+        self.frame.pack()
+
+    def hide(self):
+        self.frame.pack_forget()

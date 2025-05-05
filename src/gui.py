@@ -31,23 +31,20 @@ class GUI():
         self.db = Database()
 
         # where you can create a new user
-        self.register_user_frame = tk.Frame(self.root) 
-        self.register_user = RegisterUser(self.register_user_frame)
+        self.register_user = RegisterUser(self.root)
 
         # where you can login to the user
-        self.login_user_frame = tk.Frame(self.root) 
-        self.login_user = LoginUser(self.login_user_frame)
+        self.login_user = LoginUser(self.root)
 
         # where you can update/delete your user
-        self.user_info_frame = tk.Frame(self.root) 
-        self.user_info = UserInfo(self.user_info_frame)
+        self.user_info = UserInfo(self.root)
 
         # where you can view/CRUD on the logged in user's tasks
-        self.task_browser_frame = tk.Frame(self.root) 
-        self.task_browser = TaskBrowser(self.task_browser_frame)
+        self.task_browser = TaskBrowser(self.root)
 
 
     def run(self):
+        self.login_user.show()
         self.root.mainloop()
 
 
