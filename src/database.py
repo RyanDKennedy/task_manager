@@ -3,32 +3,30 @@ Ryan Kennedy, Gabriel Walder
 Cmdr. Schenk
 Cloud Computing
 7th Period
-March 18, 2025
+May 5, 2025
 """
 
 import mysql.connector
 import random
 
-from author_record import AuthorRecord
-from book_record import BookRecord
+from user_record import UserRecord
+from task_record import TaskRecord
 
 # CREATE DATABASE RyanKennedyAndGabrielWaldner;
 # USE RyanKennedyAndGabrielWaldner;
-# CREATE TABLE authors (
-#     id integer auto_increment unique not null,
-#     name text not null,
-#     birth_year integer,
-#     PRIMARY KEY (id)
+# CREATE TABLE users (
+#        id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL UNIQUE,
+#        name TEXT NOT NULL,
+#        username TEXT NOT NULL,
+#        hashed_password TEXT NOT NULL
 # );
-# CREATE TABLE books (
-#     id integer auto_increment unique not null,
-#     name text not null,
-#     year_released integer,
-#     page_amt integer,
-#     price float,
-#     author_id integer not null,
-#     PRIMARY KEY (id),
-#     FOREIGN KEY (author_id) REFERENCES authors(id)
+
+# CREATE TABLE tasks (
+#        id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL UNIQUE,
+#        user_id INTEGER NOT NULL,
+#        short_name TEXT NOT NULL,
+#        description TEXT,
+#        FOREIGN KEY(user_id) REFERENCES users(id)
 # );
 
 class Database():
@@ -42,9 +40,9 @@ class Database():
         self.conn.commit()
         self.conn.close()
 
-    def books_get_all_records(self):
+    def users_get_all_records(self):
         # get raw data
-        self.cursor.execute("SELECT * FROM books;")
+        self.cursor.execute("SELECT id, name, username, hashed_password FROM users;");
         arr_data = self.cursor.fetchall()
 
         result = []
@@ -55,49 +53,53 @@ class Database():
 
         # pack into array of BookRecord for easier access 
         for record in arr_data:
-            rec = BookRecord()
-            rec.fill(record[0], record[1], record[2], record[3], record[4], record[5])
+            rec = UserRecord()
+            rec.fill(id=int(record[0]), name=str(record[1]), username=str(record[2]), hashed_password=str(record[3]))
             result.append(rec)
 
         return result
 
+    def users_insert(self, record):
+        self.cursor.execute("INSERT INTO users (name, username, hashed_password) VALUES ('{}', '{}', '{}');".format(record.name, record.username, record.hashed_password))
 
-    def authors_get_all_records(self):
-        # get raw data
-        self.cursor.execute("SELECT * FROM authors;");
-        arr_data = self.cursor.fetchall()
+    def users_update(self, record):
+        self.cursor.execute("UPDATE users SET name = '{}', username = '{}', hashed_password '{}' WHERE id = {};".format(record.name, record.username, record.hashed_password, str(record.id)))
 
-        result = []
-
-        # return empty array if there is no data to pack into array
-        if(len(arr_data) == 0):
-            return result
-
-        # pack into array of BookRecord for easier access 
-        for record in arr_data:
-            rec = AuthorRecord()
-            rec.fill(record[0], record[1], record[2])
-            result.append(rec)
-
-        return result
-
-    def books_insert(self, record):
-        self.cursor.execute("INSERT INTO books (name, year_released, page_amt, price, author_id) VALUES ('{}', {}, {}, {}, {});".format(record.name, record.year_released, record.page_amt, record.price, record.author_id))
-
-    def authors_insert(self, record):
-        self.cursor.execute("INSERT INTO authors (name, birth_year) VALUES ('{}', {});".format(record.name, record.birth_year))
-
-    def books_update(self, record):
-        self.cursor.execute("UPDATE books SET name = '{}', year_released = {}, page_amt = {}, price = {}, author_id ={} WHERE id = {};".format(record.name, record.year_released, record.page_amt, record.price, record.author_id, record.id))
-
-    def authors_update(self, record):
-        self.cursor.execute("UPDATE authors SET name = '{}', birth_year = {} WHERE id = {};".format(record.name, record.birth_year, record.id))
-
-    def books_delete(self, id):
-        self.cursor.execute("DELETE FROM books WHERE id = {};".format(id))
-
-    def authors_delete(self, id):
+    def users_delete(self, id):
         # delete books that reference the author then delete the author
-        self.cursor.execute("DELETE FROM books WHERE author_id = {};".format(id))
-        self.cursor.execute("DELETE FROM authors WHERE id = {};".format(id))
+        self.cursor.execute("DELETE FROM tasks WHERE user_id = {};".format(str(id)))
+        self.cursor.execute("DELETE FROM users WHERE id = {};".format(str(id)))
+
+    # ================== TASKS STUFF =======================
+
+    def tasks_get_all_records(self):
+        # get raw data
+        self.cursor.execute("SELECT id, user_id, short_name, description FROM tasks;")
+        arr_data = self.cursor.fetchall()
+
+        result = []
+
+        # return empty array if there is no data to pack into array
+        if(len(arr_data) == 0):
+            return result
+
+        # pack into array of BookRecord for easier access 
+        for record in arr_data:
+            rec = TaskRecord()
+            rec.fill(id=int(record[0]), user_id=int(record[1]), short_name=str(record[2]), description=str(record[3]));
+            result.append(rec)
+
+        return result
+
+    def tasks_insert(self, record):
+        self.cursor.execute("INSERT INTO tasks (user_id, short_name, description) VALUES ({}, '{}', '{}');".format(str(record.user_id), record.short_name, record.description))
+
+
+    def tasks_update(self, record):
+        self.cursor.execute("UPDATE tasks SET user_id = {}, short_name = '{}', description = '{}' WHERE id = {};".format(str(record.user_id), record.short_name, record.description, str(record.id)))
+
+    def tasks_delete(self, id):
+        self.cursor.execute("DELETE FROM tasks WHERE id = {};".format(id))
+
+
 
