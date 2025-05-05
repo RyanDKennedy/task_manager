@@ -14,6 +14,11 @@ from user_record import UserRecord
 from task_record import TaskRecord
 from database import Database
 
+from register_user import RegisterUser
+from login_user import LoginUser
+from user_info import UserInfo
+from task_browser import TaskBrowser
+
 class GUI():
 
     def __init__(self):
@@ -25,8 +30,24 @@ class GUI():
         # db init
         self.db = Database()
 
+        # where you can create a new user
+        self.register_user_frame = tk.Frame(self.root) 
+        self.register_user = RegisterUser(self.register_user_frame)
+
+        # where you can login to the user
+        self.login_user_frame = tk.Frame(self.root) 
+        self.login_user = LoginUser(self.login_user_frame)
+
+        # where you can update/delete your user
+        self.user_info_frame = tk.Frame(self.root) 
+        self.user_info = UserInfo(self.user_info_frame)
+
+        # where you can view/CRUD on the logged in user's tasks
+        self.task_browser_frame = tk.Frame(self.root) 
+        self.task_browser = TaskBrowser(self.task_browser_frame)
 
 
+    def run(self):
         self.root.mainloop()
 
 

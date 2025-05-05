@@ -10,8 +10,12 @@ import sys
 from gui import GUI
 
 def main():
-    # start the gui
+
+    # initializes the gui
     gui = GUI()
+
+    # starts the gui
+    gui.run()
 
     # exit successfully
     sys.exit(0)
