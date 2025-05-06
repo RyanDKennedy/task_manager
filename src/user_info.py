@@ -55,12 +55,21 @@ class UserInfo:
 
         tk.Button(self.frame, text="Change Credentials", command=self.change_credentials).pack()
 
+        # delete user
+        
+        tk.Button(self.frame, text="Delete User", command=self.delete_user).pack()
+
     def show(self, id):
+        self.feedback_lbl["text"] = ""
         self.clear_entries()
         self.user = self.db.users_get_record_by_id(id)
         self.name_ent.insert(0, self.user.name)
         self.username_ent.insert(0, self.user.username)
         self.frame.pack()
+
+    def delete_user(self):
+        self.db.users_delete(self.user.id)
+        self.goto_login()
 
     def change_credentials(self):
         old_password = self.old_password_ent.get()
@@ -93,7 +102,6 @@ class UserInfo:
         self.clear_entries()
         self.name_ent.insert(0, self.user.name)
         self.username_ent.insert(0, self.user.username)
-        
 
     def clear_entries(self):
         self.name_ent.delete(0, "end")
@@ -102,6 +110,9 @@ class UserInfo:
         self.old_password_ent.delete(0, "end")
 
     def logout(self):
+        self.goto_login()
+
+    def goto_login(self):
         self.hide()
         self.show_map[GUIStates.LOGIN_USER]()
 

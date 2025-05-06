@@ -71,6 +71,7 @@ class LoginUser:
         self.password_ent.delete(0, "end")
 
     def show(self):
+        self.feedback_lbl["text"] = ""
         self.clear_entries()
         self.frame.pack()
 
