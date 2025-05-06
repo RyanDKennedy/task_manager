@@ -23,6 +23,8 @@ class LoginUser:
         self.db = db
 
     def init_resources(self):
+        tk.Label(self.frame, text="User Login").pack()
+
         self.feedback_lbl = tk.Label(self.frame, text="")
         self.feedback_lbl.pack()
 

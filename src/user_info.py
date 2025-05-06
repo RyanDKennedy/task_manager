@@ -24,8 +24,12 @@ class UserInfo:
         self.user = UserRecord() # stores the user that we are currently displaying the information of, currently blank but gets set in self.show(...)
 
     def init_resources(self):
+        tk.Label(self.frame, text="User Info").pack()
+
         self.feedback_lbl = tk.Label(self.frame, text="")
         self.feedback_lbl.pack()
+
+        tk.Button(self.frame, text="Goto Task Browser", command=self.goto_task_browser).pack()
 
         tk.Button(self.frame, text="Logout", command=self.logout).pack()
 
@@ -40,6 +44,8 @@ class UserInfo:
         tk.Button(self.frame, text="Change Name", command=self.change_name).pack()
 
         # change credentials
+
+        tk.Label(self.frame, text="Change Credentials").pack()
 
         tk.Label(self.frame, text="New Username:").pack()
         self.username_ent = tk.Entry(self.frame)
@@ -115,6 +121,10 @@ class UserInfo:
     def goto_login(self):
         self.hide()
         self.show_map[GUIStates.LOGIN_USER]()
+
+    def goto_task_browser(self):
+        self.hide()
+        self.show_map[GUIStates.TASK_BROWSER](self.user.id)
 
     def hide(self):
         self.frame.pack_forget()

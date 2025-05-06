@@ -23,6 +23,8 @@ class RegisterUser:
         self.db = db
 
     def init_resources(self):
+        tk.Label(self.frame, text="User Registration").pack()
+
         # name
         tk.Label(self.frame, text="Name:").pack()
         self.name_ent = tk.Entry(self.frame)
