@@ -13,6 +13,7 @@ from tkinter import messagebox
 from user_record import UserRecord
 from task_record import TaskRecord
 from database import Database
+from gui_states import GUIStates
 
 from register_user import RegisterUser
 from login_user import LoginUser
@@ -43,12 +44,11 @@ class GUI():
         self.task_browser = TaskBrowser(self.root, self.db)
 
         # a map that stores the functions to show the different states so that a button in one state can change to another state
-        # classes as strings map to functions
         show_map = {
-            "RegisterUser" : self.register_user.show,
-            "LoginUser" : self.login_user.show,
-            "UserInfo" : self.user_info.show,
-            "TaskBrowser" : self.task_browser.show
+            GUIStates.REGISTER_USER : self.register_user.show,
+            GUIStates.LOGIN_USER : self.login_user.show,
+            GUIStates.USER_INFO : self.user_info.show,
+            GUIStates.TASK_BROWSER : self.task_browser.show
         }
         self.register_user.assign_show_map(show_map)
         self.login_user.assign_show_map(show_map)
@@ -61,6 +61,8 @@ class GUI():
         self.user_info.init_resources()
         self.task_browser.init_resources()
 
+    def __del__(self):
+        self.db.close()
 
     def run(self):
         self.login_user.show()

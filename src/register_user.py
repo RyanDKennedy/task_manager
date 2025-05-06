@@ -14,6 +14,7 @@ import bcrypt
 from user_record import UserRecord
 from task_record import TaskRecord
 from database import Database
+from gui_states import GUIStates
 
 class RegisterUser:
 
@@ -45,14 +46,14 @@ class RegisterUser:
         record = UserRecord()
         password = self.password_ent.get()
         hashed_password = bcrypt.hashpw(password.encode(), b'$2b$12$zm4/D56Ntli/hWPKnmLSgu')
-        record.fill(-1, self.name_ent.get(), self.username_ent.get(), str(hashed_password))
+        record.fill(-1, self.name_ent.get(), self.username_ent.get(), hashed_password.decode("utf-8"))
         self.db.users_insert(record)
 
         self.goto_login_user()
 
     def goto_login_user(self):
         self.frame.pack_forget()
-        self.show_map["LoginUser"]()
+        self.show_map[GUIStates.LOGIN_USER]()
 
     def show(self):
         self.frame.pack()

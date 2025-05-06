@@ -33,11 +33,11 @@ class Database():
 
     def __init__(self):
         # self.conn = mysql.connector.connect(host = "192.168.0.100", user = "student", passwd = "jchs", database = "RyanKennedyAndGabrielWaldner")
-        self.conn = mysql.connector.connect(host = "127.0.0.1", user = "root", passwd = "ryansmiles", database = "RyanKennedyAndGabrielWaldner")
+        # self.conn = mysql.connector.connect(host = "127.0.0.1", user = "root", passwd = "ryansmiles", database = "RyanKennedyAndGabrielWaldner")
+        self.conn = mysql.connector.connect(host = "127.0.0.1", user = "root", passwd = "mysqlpassword", database = "RyanKennedyAndGabrielWaldner")
         self.cursor = self.conn.cursor()
 
-    def __del__(self):
-        self.conn.commit()
+    def close(self):
         self.conn.close()
 
     def users_get_all_records(self):
@@ -60,15 +60,19 @@ class Database():
         return result
 
     def users_insert(self, record):
-        self.cursor.execute("INSERT INTO users (name, username, hashed_password) VALUES ('{}', '{}', '{}');".format(record.name, record.username, record.hashed_password))
+        query = "INSERT INTO users (name, username, hashed_password) VALUES ('{}', '{}', '{}');".format(record.name, record.username, record.hashed_password)
+        self.cursor.execute(query)
+        self.conn.commit()
 
     def users_update(self, record):
         self.cursor.execute("UPDATE users SET name = '{}', username = '{}', hashed_password '{}' WHERE id = {};".format(record.name, record.username, record.hashed_password, str(record.id)))
+        self.conn.commit()
 
     def users_delete(self, id):
         # delete books that reference the author then delete the author
         self.cursor.execute("DELETE FROM tasks WHERE user_id = {};".format(str(id)))
         self.cursor.execute("DELETE FROM users WHERE id = {};".format(str(id)))
+        self.conn.commit()
 
     # ================== TASKS STUFF =======================
 
@@ -93,13 +97,15 @@ class Database():
 
     def tasks_insert(self, record):
         self.cursor.execute("INSERT INTO tasks (user_id, short_name, description) VALUES ({}, '{}', '{}');".format(str(record.user_id), record.short_name, record.description))
-
+        self.conn.commit()
 
     def tasks_update(self, record):
         self.cursor.execute("UPDATE tasks SET user_id = {}, short_name = '{}', description = '{}' WHERE id = {};".format(str(record.user_id), record.short_name, record.description, str(record.id)))
+        self.conn.commit()
 
     def tasks_delete(self, id):
         self.cursor.execute("DELETE FROM tasks WHERE id = {};".format(id))
+        self.conn.commit()
 
 
 
