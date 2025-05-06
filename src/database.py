@@ -89,9 +89,9 @@ class Database():
 
     # ================== TASKS STUFF =======================
 
-    def tasks_get_all_records(self):
+    def tasks_get_all_records_with_user_id(self, user_id):
         # get raw data
-        self.cursor.execute("SELECT id, user_id, short_name, description FROM tasks;")
+        self.cursor.execute("SELECT id, user_id, short_name, description FROM tasks WHERE user_id = {};".format(user_id))
         arr_data = self.cursor.fetchall()
 
         result = []
