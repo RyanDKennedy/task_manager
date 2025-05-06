@@ -27,3 +27,10 @@ class UserRecord:
         self.name = name
         self.username = username
         self.hashed_password = hashed_password
+
+    def to_string(self):
+        result = "id: {}".format(self.id)
+        result += "\nname: {}".format(self.name)
+        result += "\nusername: {}".format(self.username)
+        result += "\nhashed_password: {}".format(self.hashed_password)
+        return result

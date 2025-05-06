@@ -23,6 +23,9 @@ class LoginUser:
         self.db = db
 
     def init_resources(self):
+        self.feedback_lbl = tk.Label(self.frame, text="")
+        self.feedback_lbl.pack()
+
         # username
         tk.Label(self.frame, text="Username:").pack()
         self.username_ent = tk.Entry(self.frame)
@@ -53,16 +56,22 @@ class LoginUser:
                 break
 
         if (user_id == -1):
-            print("invalid credentials")
+            self.feedback_lbl["text"] = "Invalid Credentials"
             return
 
-        print("valid crendentials")
+        self.hide()
+        self.show_map[GUIStates.USER_INFO](user_id)
 
     def goto_register_user(self):
         self.hide()
         self.show_map[GUIStates.REGISTER_USER]()
 
+    def clear_entries(self):
+        self.username_ent.delete(0, "end")
+        self.password_ent.delete(0, "end")
+
     def show(self):
+        self.clear_entries()
         self.frame.pack()
 
     def hide(self):

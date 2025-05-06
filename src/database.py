@@ -59,13 +59,27 @@ class Database():
 
         return result
 
+    def users_get_record_by_id(self, id):
+        self.cursor.execute("SELECT id, name, username, hashed_password FROM users WHERE id = {};".format(id));
+        arr_data = self.cursor.fetchall()
+
+        if (len(arr_data) == 0):
+            return UserRecord()
+
+        record = arr_data[0] # db record
+        rec = UserRecord() # function result of type UserRecord
+        rec.fill(id=int(record[0]), name=str(record[1]), username=str(record[2]), hashed_password=str(record[3]))
+        return rec
+
     def users_insert(self, record):
         query = "INSERT INTO users (name, username, hashed_password) VALUES ('{}', '{}', '{}');".format(record.name, record.username, record.hashed_password)
         self.cursor.execute(query)
         self.conn.commit()
 
     def users_update(self, record):
-        self.cursor.execute("UPDATE users SET name = '{}', username = '{}', hashed_password '{}' WHERE id = {};".format(record.name, record.username, record.hashed_password, str(record.id)))
+        query = "UPDATE users SET name = '{}', username = '{}', hashed_password = '{}' WHERE id = {};".format(record.name, record.username, record.hashed_password, str(record.id))
+        print("QUERY -> {}".format(query))
+        self.cursor.execute(query)
         self.conn.commit()
 
     def users_delete(self, id):

@@ -55,7 +55,13 @@ class RegisterUser:
         self.frame.pack_forget()
         self.show_map[GUIStates.LOGIN_USER]()
 
+    def clear_entries(self):
+        self.name_ent.delete(0, "end")
+        self.username_ent.delete(0, "end")
+        self.password_ent.delete(0, "end")
+
     def show(self):
+        self.clear_entries()
         self.frame.pack()
 
     def hide(self):
