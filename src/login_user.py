@@ -40,7 +40,7 @@ class LoginUser:
 
         # buttons
         tk.Button(self.frame, text="Login", command=self.login).pack()
-        tk.Button(self.frame, text="Goto User Register", command=self.goto_register_user).pack()
+        tk.Button(self.frame, text="Goto User Registration", command=self.goto_register_user).pack()
 
     def login(self):
         record = UserRecord()
