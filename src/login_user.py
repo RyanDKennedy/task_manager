@@ -48,21 +48,14 @@ class LoginUser:
         hashed_password = bcrypt.hashpw(password.encode(), b'$2b$12$zm4/D56Ntli/hWPKnmLSgu')
         record.fill(-1, "", self.username_ent.get(), hashed_password.decode("utf-8"))
 
-        users = self.db.users_get_all_records()
+        matched_users = self.db.users_get_records_with_username_and_hashed_password(record.username, record.hashed_password)
 
-        user_id = -1
-
-        for user in users:
-            if (user.username == record.username and user.hashed_password == record.hashed_password):
-                user_id = user.id
-                break
-
-        if (user_id == -1):
+        if (len(matched_users) == 0):
             self.feedback_lbl["text"] = "Invalid Credentials"
             return
 
         self.hide()
-        self.show_map[GUIStates.USER_INFO](user_id)
+        self.show_map[GUIStates.USER_INFO](matched_users[0].id)
 
     def goto_register_user(self):
         self.hide()

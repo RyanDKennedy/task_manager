@@ -33,8 +33,8 @@ class Database():
 
     def __init__(self):
         # self.conn = mysql.connector.connect(host = "192.168.0.100", user = "student", passwd = "jchs", database = "RyanKennedyAndGabrielWaldner")
-        # self.conn = mysql.connector.connect(host = "127.0.0.1", user = "root", passwd = "ryansmiles", database = "RyanKennedyAndGabrielWaldner")
-        self.conn = mysql.connector.connect(host = "127.0.0.1", user = "root", passwd = "mysqlpassword", database = "RyanKennedyAndGabrielWaldner")
+        self.conn = mysql.connector.connect(host = "127.0.0.1", user = "root", passwd = "ryansmiles", database = "RyanKennedyAndGabrielWaldner")
+        # self.conn = mysql.connector.connect(host = "127.0.0.1", user = "root", passwd = "mysqlpassword", database = "RyanKennedyAndGabrielWaldner")
         self.cursor = self.conn.cursor()
 
     def close(self):
@@ -70,6 +70,26 @@ class Database():
         rec = UserRecord() # function result of type UserRecord
         rec.fill(id=int(record[0]), name=str(record[1]), username=str(record[2]), hashed_password=str(record[3]))
         return rec
+
+    def users_get_records_with_username_and_hashed_password(self, username, hashed_password):
+        # get raw data
+        self.cursor.execute("SELECT id, name, username, hashed_password FROM users WHERE username = '{}' AND hashed_password = '{}';".format(username, hashed_password))
+        arr_data = self.cursor.fetchall()
+
+        result = []
+
+        # return empty array if there is no data to pack into array
+        if(len(arr_data) == 0):
+            return result
+
+        # pack into array of BookRecord for easier access 
+        for record in arr_data:
+            rec = UserRecord()
+            rec.fill(id=int(record[0]), name=str(record[1]), username=str(record[2]), hashed_password=str(record[3]))
+            result.append(rec)
+
+        return result
+
 
     def users_insert(self, record):
         query = "INSERT INTO users (name, username, hashed_password) VALUES ('{}', '{}', '{}');".format(record.name, record.username, record.hashed_password)
