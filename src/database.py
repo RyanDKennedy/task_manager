@@ -78,7 +78,6 @@ class Database():
 
     def users_update(self, record):
         query = "UPDATE users SET name = '{}', username = '{}', hashed_password = '{}' WHERE id = {};".format(record.name, record.username, record.hashed_password, str(record.id))
-        print("QUERY -> {}".format(query))
         self.cursor.execute(query)
         self.conn.commit()
 
