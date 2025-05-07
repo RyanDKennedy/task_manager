@@ -113,6 +113,9 @@ class TaskBrowser:
         task.fill(id=-1, user_id=self.user.id, short_name="", description="")
         self.db.tasks_insert(task)
         self.refresh()
+        self.selected_task = len(self.tasks) - 1
+        self.display_record()
+        
 
     def update_record(self):
         if (self.selected_task == -1):
