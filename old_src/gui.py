@@ -1,5 +1,5 @@
 """
-Ryan Kennedy, Gabriel Waldner
+Ryan Kennedy, Gabriel Walder
 Cmdr. Schenk
 Cloud Computing
 7th Period
@@ -26,7 +26,7 @@ class GUI():
 
         # tkinter init
         self.root = tk.Tk()
-        self.root.geometry("800x800")
+        self.root.geometry("1000x1000")
 
         # db init
         self.db = Database()
@@ -67,3 +67,6 @@ class GUI():
     def run(self):
         self.login_user.show()
         self.root.mainloop()
+
+
+

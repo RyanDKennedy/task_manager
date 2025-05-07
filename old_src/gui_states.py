@@ -1,5 +1,5 @@
 """
-Ryan Kennedy, Gabriel Waldner
+Ryan Kennedy, Gabriel Walder
 Cmdr. Schenk
 Cloud Computing
 7th Period

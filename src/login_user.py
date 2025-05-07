@@ -1,10 +1,11 @@
 """
-Ryan Kennedy, Gabriel Walder
+Ryan Kennedy, Gabriel Waldner
 Cmdr. Schenk
 Cloud Computing
 7th Period
 May 5, 2025
 """
+
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -23,24 +24,44 @@ class LoginUser:
         self.db = db
 
     def init_resources(self):
-        tk.Label(self.frame, text="User Login").pack()
+        style = ttk.Style()
+        style.theme_use('clam')  # Try also: 'alt', 'vista', etc.
 
-        self.feedback_lbl = tk.Label(self.frame, text="")
-        self.feedback_lbl.pack()
+        # Title Label 
+        style.configure("TitleLabel.TLabel", font=("Segoe UI", 20, "bold"))
 
-        # username
-        tk.Label(self.frame, text="Username:").pack()
-        self.username_ent = tk.Entry(self.frame)
-        self.username_ent.pack()
+        # Feedback Label 
+        style.configure("FeedbackLabel.TLabel", font=("Segoe UI", 9, "italic"))
 
-        # password
-        tk.Label(self.frame, text="Password:").pack()
-        self.password_ent = tk.Entry(self.frame)
-        self.password_ent.pack()
+        # Field Labels 
+        style.configure("FieldLabel.TLabel", font=("Segoe UI", 20), foreground="#444")
 
-        # buttons
-        tk.Button(self.frame, text="Login", command=self.login).pack()
-        tk.Button(self.frame, text="Goto User Registration", command=self.goto_register_user).pack()
+        # Field Entry 
+        style.configure("Field.TEntry", font=("Segoe UI", 20), padding=10)
+
+        # Action Buttons 
+        style.configure("Action.TButton", font=("Segoe UI", 20), padding=10)
+
+
+
+        ttk.Label(self.frame, text="User Login", style="TitleLabel.TLabel").place(x=400, y=30, anchor="center")
+
+        self.feedback_lbl = ttk.Label(self.frame, text="...", style="FeedbackLabel.TLabel")
+        self.feedback_lbl.place(x=50, y=30)
+
+        # Username label 
+        ttk.Label(self.frame, text="Username:", style="FieldLabel.TLabel").place(x=100, y=150)
+        self.username_ent = ttk.Entry(self.frame, style="Field.TEntry")
+        self.username_ent.place(x=100, y=200, width=600, height=50)  
+
+        # Password 
+        ttk.Label(self.frame, text="Password:", style="FieldLabel.TLabel").place(x=100, y=375)  
+        self.password_ent = ttk.Entry(self.frame, style="Field.TEntry")
+        self.password_ent.place(x=100, y=425, width=600, height=50)  
+
+        #Buttonss
+        ttk.Button(self.frame, text="Login", command=self.login).place(x=425, y=600, width=225, height=75)
+        ttk.Button(self.frame, text="Register", command=self.goto_register_user).place(x=125, y=600, width=225, height=75)
 
     def login(self):
         record = UserRecord()
@@ -68,10 +89,10 @@ class LoginUser:
     def show(self):
         self.feedback_lbl["text"] = ""
         self.clear_entries()
-        self.frame.pack()
+        self.frame.place(x=0,y=0,width=1000,height=1000)
 
     def hide(self):
-        self.frame.pack_forget()
+        self.frame.place_forget()
 
     def assign_show_map(self, show_map):
         self.show_map = show_map

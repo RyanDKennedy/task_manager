@@ -1,5 +1,5 @@
 """
-Ryan Kennedy, Gabriel Waldner
+Ryan Kennedy, Gabriel Walder
 Cmdr. Schenk
 Cloud Computing
 7th Period
@@ -33,9 +33,8 @@ class Database():
 
     def __init__(self):
         # self.conn = mysql.connector.connect(host = "192.168.0.100", user = "student", passwd = "jchs", database = "RyanKennedyAndGabrielWaldner")
-        # self.conn = mysql.connector.connect(host = "127.0.0.1", user = "root", passwd = "#Whalez17", database = "RyanKennedyAndGabrielWaldner")
-        # self.conn = mysql.connector.connect(host = "127.0.0.1", user = "root", passwd = "mysqlpassword", database = "RyanKennedyAndGabrielWaldner")
         self.conn = mysql.connector.connect(host = "127.0.0.1", user = "root", passwd = "ryansmiles", database = "RyanKennedyAndGabrielWaldner")
+        # self.conn = mysql.connector.connect(host = "127.0.0.1", user = "root", passwd = "mysqlpassword", database = "RyanKennedyAndGabrielWaldner")
         self.cursor = self.conn.cursor()
 
     def close(self):
@@ -140,4 +139,6 @@ class Database():
     def tasks_delete(self, id):
         self.cursor.execute("DELETE FROM tasks WHERE id = {};".format(id))
         self.conn.commit()
+
+
 

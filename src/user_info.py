@@ -1,10 +1,12 @@
 """
-Ryan Kennedy, Gabriel Walder
+Ryan Kennedy, Gabriel Waldner
 Cmdr. Schenk
 Cloud Computing
 7th Period
 May 5, 2025
 """
+
+import sys
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -19,51 +21,82 @@ from gui_states import GUIStates
 class UserInfo:
 
     def __init__(self, root, db):
-        self.frame = tk.Frame(root);
+        self.frame = tk.Frame(root)
+        self.line_canvas = tk.Canvas(self.frame, width=800, height=800, bg="white", highlightthickness=0)
         self.db = db
         self.user = UserRecord() # stores the user that we are currently displaying the information of, currently blank but gets set in self.show(...)
 
     def init_resources(self):
-        tk.Label(self.frame, text="User Info").pack()
+        style = ttk.Style()
+        style.theme_use('clam')  
 
-        self.feedback_lbl = tk.Label(self.frame, text="")
-        self.feedback_lbl.pack()
+        # Title Label 
+        style.configure("TitleLabel.TLabel", font=("Segoe UI", 20, "italic"))
 
-        tk.Button(self.frame, text="Goto Task Browser", command=self.goto_task_browser).pack()
+        style.configure("HeaderLabel.TLabel", font=("Segoe UI", 12, "italic"))
 
-        tk.Button(self.frame, text="Logout", command=self.logout).pack()
+        # Feedback Label 
+        style.configure("FeedbackLabel.TLabel", font=("Segoe UI", 9, "italic"))
+
+        # Field Labels 
+        style.configure("FieldLabel.TLabel", font=("Segoe UI", 10), foreground="#444", background="white")
+
+        # Field Entry 
+        style.configure("Field.TEntry", font=("Segoe UI", 7), padding=10)
+
+        # Info Buttons 
+        style.configure("Info.TButton", font=("Segoe UI", 7), padding=10)
+
+        # Action Buttons 
+        style.configure("Action.TButton", font=("Segoe UI", 10), padding=10)
+
+        # Delete Buttons 
+        style.configure("Delete.TButton", font=("Segoe UI", 20), padding=10, background="#d32f2f")
+
+
+
+
+        ttk.Label(self.frame, text="User Info", style="TitleLabel.TLabel").place(x=400, y=30, anchor="center")
+
+        self.feedback_lbl = ttk.Label(self.frame, text="...", style="FeedbackLabel.TLabel")
+        self.feedback_lbl.place(x=1000, y=30)
+
 
         # change name
 
-        tk.Label(self.frame, text="Change Name").pack()
+        ttk.Label(self.frame, text="Change Name", style="HeaderLabel.TLabel").place(x=20,y=60)
 
-        tk.Label(self.frame, text="Name:").pack()
-        self.name_ent = tk.Entry(self.frame)
-        self.name_ent.pack()
+        ttk.Label(self.frame, text="Name:", style="FieldLabel.TLabel").place(x=100, y=125)
+        self.name_ent = ttk.Entry(self.frame, style="Field.TEntry")
+        self.name_ent.place(x=100, y=150)
 
-        tk.Button(self.frame, text="Change Name", command=self.change_name).pack()
+        ttk.Button(self.frame, text="Save", command=self.change_name, style="Info.TButton").place(x=100, y=225, width=150, height=50)
 
         # change credentials
 
-        tk.Label(self.frame, text="Change Credentials").pack()
+        ttk.Label(self.frame, text="Change Credentials", style="HeaderLabel.TLabel").place(x=20, y=350)
 
-        tk.Label(self.frame, text="New Username:").pack()
-        self.username_ent = tk.Entry(self.frame)
-        self.username_ent.pack()
+        ttk.Label(self.frame, text="Username:", style="FieldLabel.TLabel").place(x=100, y=400)
+        self.username_ent = ttk.Entry(self.frame, style="Field.TEntry")
+        self.username_ent.place(x=100, y=425)
 
-        tk.Label(self.frame, text="New Password:").pack()
-        self.password_ent = tk.Entry(self.frame)
-        self.password_ent.pack()
+        ttk.Label(self.frame, text="New Password:", style="FieldLabel.TLabel").place(x=100, y=500)
+        self.password_ent = ttk.Entry(self.frame, style="Field.TEntry")
+        self.password_ent.place(x=100, y=525)
 
-        tk.Label(self.frame, text="Old Password:").pack()
-        self.old_password_ent = tk.Entry(self.frame)
-        self.old_password_ent.pack()
+        ttk.Label(self.frame, text="Old Password:", style="FieldLabel.TLabel").place(x=100, y=600)
+        self.old_password_ent = ttk.Entry(self.frame, style="Field.TEntry")
+        self.old_password_ent.place(x=100, y=625)
 
-        tk.Button(self.frame, text="Change Credentials", command=self.change_credentials).pack()
+        ttk.Button(self.frame, text="Save", command=self.change_credentials, style="Info.TButton").place(x=100, y=700, width=150, height=50)
 
-        # delete user
+        # buttons for action
         
-        tk.Button(self.frame, text="Delete User", command=self.delete_user).pack()
+        ttk.Button(self.frame, text="Goto Task Browser", command=self.goto_task_browser, style="Action.TButton").place(x=500, y=80, width=225, height=100)
+        ttk.Button(self.frame, text="Logout", command=self.logout, style="Action.TButton").place(x=500,y=280, width=225, height=100)
+        ttk.Button(self.frame, text="Quit App", style="Action.TButton", command=lambda:sys.exit(0)).place(x=500, y=466,width=225, height=100)
+        ttk.Button(self.frame, text="Delete User", command=self.delete_user, style="Delete.TButton").place(x=500, y=650, width=225, height=100)
+
 
     def show(self, id):
         self.feedback_lbl["text"] = ""
@@ -71,7 +104,10 @@ class UserInfo:
         self.user = self.db.users_get_record_by_id(id)
         self.name_ent.insert(0, self.user.name)
         self.username_ent.insert(0, self.user.username)
-        self.frame.pack()
+        self.line_canvas.place(x=0,y=0)
+        self.frame.place(x=0,y=0,width=800,height=800)
+        
+        self.line_canvas.create_line(400, 75, 400, 800, fill="black", width=5)
 
     def delete_user(self):
         self.db.users_delete(self.user.id)
@@ -127,7 +163,8 @@ class UserInfo:
         self.show_map[GUIStates.TASK_BROWSER](self.user.id)
 
     def hide(self):
-        self.frame.pack_forget()
+        self.line_canvas.place_forget()
+        self.frame.place_forget()
 
     def assign_show_map(self, show_map):
         self.show_map = show_map

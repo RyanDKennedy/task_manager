@@ -1,13 +1,15 @@
 """
-Ryan Kennedy, Gabriel Walder
+Ryan Kennedy, Gabriel Waldner
 Cmdr. Schenk
 Cloud Computing
 7th Period
 May 5, 2025
 """
+
 import tkinter as tk
-from tkinter import ttk
+from tkinter import Canvas, ttk
 from tkinter import messagebox
+from PIL import ImageTk, Image
 
 from user_record import UserRecord
 from task_record import TaskRecord
@@ -17,55 +19,92 @@ from gui_states import GUIStates
 class TaskBrowser:
 
     def __init__(self, root, db):
-        self.frame = tk.Frame(root);
+        self.frame = tk.Frame(root)
         self.db = db
         self.user = UserRecord()
         self.tasks = []
         self.selected_task = 0 # index into self.tasks
+        self.filename= './med.jpeg'
+        #defining the image so it can be placed later on:
+        self.my_img = ImageTk.PhotoImage(Image.open(self.filename).resize((500, 550)))
 
     def init_resources(self):
-        tk.Label(self.frame, text="Task Browser").pack()
+        self.canvasMain = Canvas(self.frame, width=1000, height=1000)
+        #Places the image on the canvas:
+        self.canvasMain.create_image(260, 100, image=self.my_img , anchor="nw") #image=self.my_img,
+                
+        #CREATING LABELS AND ENTIRES FOR CREATE A LOGIN SCREEN, DONE BY GABRIEL WALDNER
+        #Placing the canvas:
+                
+        # Style setup (once, in __init__ or init_resources)
+        style = ttk.Style()
+        style.theme_use('clam')  # Options: 'clam', 'alt', 'default', 'vista'
+        style.configure("TButton", font=("Segoe UI", 10), padding=6)
 
-        self.feedback_lbl = tk.Label(self.frame, text="")
-        self.feedback_lbl.pack()
+        # Title Label 
+        style.configure("TitleLabel.TLabel", font=("Segoe UI", 20, "italic"))
+
+        style.configure("HeaderLabel.TLabel", font=("Segoe UI", 12, "italic"))
+
+
+        # Field Labels 
+        style.configure("FieldLabel.TLabel", font=("Segoe UI", 10), foreground="#444")
+
+        # Field Entry 
+        style.configure("Field.TEntry", font=("Segoe UI", 20), padding=10)
+
+        # Info Buttons 
+        style.configure("Info.TButton", font=("Segoe UI", 7), padding=10)
+
+        # Action Buttons 
+        style.configure("Action.TButton", font=("Segoe UI", 10), padding=10)
+
+        # Delete Buttons 
+        style.configure("Delete.TButton", font=("Segoe UI", 20), padding=10, background="#d32f2f")
+
+        ttk.Label(self.frame, text="Task Browser", style="TitleLabel.TLabel").place(x=50, y = 20)
+
+        self.feedback_lbl = tk.Label(self.frame, text="...")
+        self.feedback_lbl.place(x=100, y=1000)
 
         # gui state change buttons
 
-        tk.Button(self.frame, text="Goto User Info", command=self.goto_user_info).pack()
-        tk.Button(self.frame, text="Logout", command=self.logout).pack()
+        ttk.Button(self.frame, text="Goto User Info", command=self.goto_user_info, style="Info.TButton").place(x=500, y=20)
+        ttk.Button(self.frame, text="Logout", command=self.logout, style="Info.TButton").place(x=650, y=20)
 
         # entries and their respective labels
 
         self.task_num_lbl = tk.Label(self.frame)
-        self.task_num_lbl.pack()
+        self.task_num_lbl.place(x=50, y=100)
 
-        tk.Label(self.frame, text="Short Name:").pack()
-        self.short_name_ent = tk.Entry(self.frame)
-        self.short_name_ent.pack()
+        ttk.Label(self.frame, text="Short Name:", style="HeaderLabel.TLabel").place(x=50, y=200)
+        self.short_name_ent = ttk.Entry(self.frame, style="Field.TEntry")
+        self.short_name_ent.place(x=50, y=250)
 
-        tk.Label(self.frame, text="Description:").pack()
-        self.description_ent = tk.Entry(self.frame)
-        self.description_ent.pack()
+        ttk.Label(self.frame, text="Description:" , style="HeaderLabel.TLabel").place(x=50, y=350)
+        self.description_ent = ttk.Entry(self.frame, style="Field.TEntry")
+        self.description_ent.place(x=50, y=400)
 
         # CRUD buttons
-        tk.Button(self.frame, text="New", command=self.add_record).pack()
-        tk.Button(self.frame, text="Update", command=self.update_record).pack()
-        tk.Button(self.frame, text="Delete", command=self.delete_record).pack()
+        ttk.Button(self.frame, text="New", command=self.add_record, style="Info.TButton").place(x=75, y=500)
+        ttk.Button(self.frame, text="Update", command=self.update_record, style="Info.TButton").place(x=75, y=600)
+        ttk.Button(self.frame, text="Delete", command=self.delete_record, style="Info.TButton").place(x=75, y=700)
 
         # nav buttons
-        tk.Button(self.frame, text="<", command=lambda:self.increment_selected_task(-1)).pack()
-        tk.Button(self.frame, text="<<", command=lambda:self.increment_selected_task(-3)).pack()
-        tk.Button(self.frame, text="|<", command=lambda:self.increment_selected_task(-1 * self.selected_task)).pack()
-        tk.Button(self.frame, text=">", command=lambda:self.increment_selected_task(1)).pack()
-        tk.Button(self.frame, text=">>", command=lambda:self.increment_selected_task(3)).pack()
-        tk.Button(self.frame, text=">|", command=lambda:self.increment_selected_task(len(self.tasks) - 1 - self.selected_task)).pack()
+        ttk.Button(self.frame, text="<", command=lambda:self.increment_selected_task(-1), style="Info.TButton").place(x=415, y=700)
+        ttk.Button(self.frame, text="<<", command=lambda:self.increment_selected_task(-3), style="Info.TButton").place(x=335, y=700)
+        ttk.Button(self.frame, text="|<", command=lambda:self.increment_selected_task(-1 * self.selected_task), style="Info.TButton").place(x=265, y=700)
+        ttk.Button(self.frame, text=">", command=lambda:self.increment_selected_task(1), style="Info.TButton").place(x=500, y=700)
+        ttk.Button(self.frame, text=">>", command=lambda:self.increment_selected_task(3), style="Info.TButton").place(x=575, y=700)
+        ttk.Button(self.frame, text=">|", command=lambda:self.increment_selected_task(len(self.tasks) - 1 - self.selected_task), style="Info.TButton").place(x=655, y=700)
 
     def show(self, id):
+        self.canvasMain.pack()
         self.user = self.db.users_get_record_by_id(id)
         self.selected_task = 0
         self.refresh()
 
-        self.frame.pack()
+        self.frame.place(x=0, y=0, width=1000, height=1000)
 
     def add_record(self):
         task = TaskRecord()
@@ -146,7 +185,8 @@ class TaskBrowser:
         self.show_map[GUIStates.USER_INFO](self.user.id)
 
     def hide(self):
-        self.frame.pack_forget()
+        self.frame.place_forget()
+        self.canvasMain.pack_forget()
 
     def assign_show_map(self, show_map):
         self.show_map = show_map
