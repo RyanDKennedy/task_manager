@@ -1,0 +1,22 @@
+#!/bin/bash
+
+for f in $(ls src | grep py$)
+do
+	vim src/$f -c "hardcopy > pdf/$f.ps | q"
+	NEW_NAME="$(echo $f | sed "s/py/pdf/g")"
+	ps2pdf "./pdf/$f.ps" "./pdf/$NEW_NAME"
+	rm "pdf/$f.ps"
+	echo "src/$f -> pdf/$NEW_NAME"
+done;
+
+for f in $(ls src | grep jpeg$)
+do
+	NEW_NAME=$(echo $f | sed "s/jpeg/pdf/g")
+	img2pdf src/$f > pdf/$NEW_NAME
+	echo "src/$f -> pdf/$NEW_NAME"
+done;
+
+pushd pdf
+pdfunite gui_states.pdf task_record.pdf user_record.pdf database.pdf login_user.pdf register_user.pdf task_browser.pdf user_info.pdf gui.pdf main.pdf med.pdf final.pdf
+popd
+echo "generated final pdf at pdf/final.pdf"

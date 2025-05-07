@@ -25,6 +25,7 @@ class TaskBrowser:
         self.tasks = []
         self.selected_task = 0 # index into self.tasks
         self.filename= 'src/med.jpeg'
+        self.is_inserting = False  # Track if we are in insert mode
         #defining the image so it can be placed later on:
         self.my_img = ImageTk.PhotoImage(Image.open(self.filename).resize((500, 550)))
 
@@ -104,18 +105,25 @@ class TaskBrowser:
         self.frame.place(x=0, y=0, width=1000, height=1000)
 
     def add_record(self):
-        task = TaskRecord()
-
-        result = messagebox.askquestion("Task Add Confirmation", "Are you sure that you would like to insert a blank record?")
-        if (result != "yes"):
-            return
-
-        task.fill(id=-1, user_id=self.user.id, short_name="", description="")
-        self.db.tasks_insert(task)
-        self.refresh()
-        self.selected_task = len(self.tasks) - 1
-        self.display_record()
-        
+        if not self.is_inserting:
+            # Clear fields and change button text to "Insert"
+            self.short_name_ent.delete(0, "end")
+            self.description_ent.delete(0, "end")
+            self.is_inserting = True 
+            self.createBtn = ttk.Button(self.frame, text="Insert", command=self.add_record, style="Info.TButton").place(x=75, y=500)
+            
+        else:
+            # Insert the record and refresh
+            task = TaskRecord()
+            task.fill(id=-1, user_id=self.user.id, short_name=self.short_name_ent.get(), description=self.description_ent.get())
+            self.db.tasks_insert(task)
+            self.refresh()
+            self.is_inserting = False
+            self.createBtn = ttk.Button(self.frame, text="New", command=self.add_record, style="Info.TButton").place(x=75, y=500)
+            # Select and display the newly added task
+            self.selected_task = len(self.tasks) - 1
+            self.display_record()
+            
 
     def update_record(self):
         if (self.selected_task == -1):
