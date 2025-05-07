@@ -19,3 +19,15 @@ class TaskRecord:
         self.user_id = user_id
         self.short_name = short_name
         self.description = description
+
+    def to_string(self):
+        result = "id: {}".format(self.id)
+        result += "\nuser_id: {}".format(self.user_id)
+        result += "\nshort_name: {}".format(self.short_name)
+        result += "\ndescription: {}".format(self.description)
+        return result
+
+
+
+
+

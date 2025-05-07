@@ -24,7 +24,7 @@ class TaskBrowser:
         self.user = UserRecord()
         self.tasks = []
         self.selected_task = 0 # index into self.tasks
-        self.filename= './med.jpeg'
+        self.filename= 'src/med.jpeg'
         #defining the image so it can be placed later on:
         self.my_img = ImageTk.PhotoImage(Image.open(self.filename).resize((500, 550)))
 
@@ -63,9 +63,6 @@ class TaskBrowser:
         style.configure("Delete.TButton", font=("Segoe UI", 20), padding=10, background="#d32f2f")
 
         ttk.Label(self.frame, text="Task Browser", style="TitleLabel.TLabel").place(x=50, y = 20)
-
-        self.feedback_lbl = tk.Label(self.frame, text="...")
-        self.feedback_lbl.place(x=100, y=1000)
 
         # gui state change buttons
 
@@ -108,24 +105,38 @@ class TaskBrowser:
 
     def add_record(self):
         task = TaskRecord()
-        task.fill(id=-1, user_id=self.user.id, short_name=self.short_name_ent.get(), description=self.description_ent.get())
+
+        result = messagebox.askquestion("Task Add Confirmation", "Are you sure that you would like to insert a blank record?")
+        if (result != "yes"):
+            return
+
+        task.fill(id=-1, user_id=self.user.id, short_name="", description="")
         self.db.tasks_insert(task)
         self.refresh()
 
     def update_record(self):
         if (self.selected_task == -1):
-            self.feedback_lbl["text"] = "Can't update nonexistent record"
+            messagebox.showerror("Can't update a nonexistent record.", "Can't update a nonexistent record.");
             return
 
-        task = self.tasks[self.selected_task]
-        task.short_name = self.short_name_ent.get()
-        task.description = self.description_ent.get()
+        task = TaskRecord()
+        task.fill(id=self.tasks[self.selected_task].id, user_id=self.tasks[self.selected_task].user_id, short_name=self.short_name_ent.get(), description=self.description_ent.get())
+
+        result = messagebox.askquestion("Task Update Confirmation", "Are you sure that you would like to update this task?\n\n"+self.tasks[self.selected_task].to_string()+"\n\nTo This Task\n\n"+task.to_string())
+        if (result != "yes"):
+            return
+
+
         self.db.tasks_update(task)
         self.refresh()
 
     def delete_record(self):
         if (self.selected_task == -1):
-            self.feedback_lbl["text"] = "Can't delete nonexistent record"
+            messagebox.showerror("Can't delete a nonexistent record.", "Can't delete a nonexistent record.");
+            return
+
+        result = messagebox.askquestion("Task Delete Confirmation", "Are you sure that you would like to delete this task?\n\n"+self.tasks[self.selected_task].to_string())
+        if (result != "yes"):
             return
 
         self.db.tasks_delete(self.tasks[self.selected_task].id)

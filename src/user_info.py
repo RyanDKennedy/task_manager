@@ -35,9 +35,6 @@ class UserInfo:
 
         style.configure("HeaderLabel.TLabel", font=("Segoe UI", 12, "italic"))
 
-        # Feedback Label 
-        style.configure("FeedbackLabel.TLabel", font=("Segoe UI", 9, "italic"))
-
         # Field Labels 
         style.configure("FieldLabel.TLabel", font=("Segoe UI", 10), foreground="#444", background="white")
 
@@ -55,12 +52,7 @@ class UserInfo:
 
 
 
-
-        ttk.Label(self.frame, text="User Info", style="TitleLabel.TLabel").place(x=400, y=30, anchor="center")
-
-        self.feedback_lbl = ttk.Label(self.frame, text="...", style="FeedbackLabel.TLabel")
-        self.feedback_lbl.place(x=1000, y=30)
-
+        ttk.Label(self.frame, text="Account Info", style="TitleLabel.TLabel").place(x=400, y=30, anchor="center")
 
         # change name
 
@@ -95,11 +87,10 @@ class UserInfo:
         ttk.Button(self.frame, text="Goto Task Browser", command=self.goto_task_browser, style="Action.TButton").place(x=500, y=80, width=225, height=100)
         ttk.Button(self.frame, text="Logout", command=self.logout, style="Action.TButton").place(x=500,y=280, width=225, height=100)
         ttk.Button(self.frame, text="Quit App", style="Action.TButton", command=lambda:sys.exit(0)).place(x=500, y=466,width=225, height=100)
-        ttk.Button(self.frame, text="Delete User", command=self.delete_user, style="Delete.TButton").place(x=500, y=650, width=225, height=100)
+        ttk.Button(self.frame, text="Delete Account", command=self.delete_user, style="Delete.TButton").place(x=500 - 8, y=650, width=240, height=100)
 
 
     def show(self, id):
-        self.feedback_lbl["text"] = ""
         self.clear_entries()
         self.user = self.db.users_get_record_by_id(id)
         self.name_ent.insert(0, self.user.name)
@@ -110,15 +101,23 @@ class UserInfo:
         self.line_canvas.create_line(400, 75, 400, 800, fill="black", width=5)
 
     def delete_user(self):
+        result = messagebox.askquestion("Account Deletion Confirmation", "Are you sure that you would like to delete your account?")
+        if (result != "yes"):
+            return
+
         self.db.users_delete(self.user.id)
         self.goto_login()
 
     def change_credentials(self):
+        result = messagebox.askquestion("Change Credentials Confirmation", "Are you sure that you would like to update your credentials?")
+        if (result != "yes"):
+            return
+
         old_password = self.old_password_ent.get()
         hashed_old_password = bcrypt.hashpw(old_password.encode(), b'$2b$12$zm4/D56Ntli/hWPKnmLSgu').decode("utf-8")
 
         if (hashed_old_password != self.user.hashed_password):
-            self.feedback_lbl["text"] = "Failed to change credentials. Old password is incorrect."
+            tk.messagebox.showerror("Failed to change credentials", "Old Password is Incorrect")
             return
 
         password = self.password_ent.get()
@@ -129,13 +128,13 @@ class UserInfo:
         self.db.users_update(record)
         self.user = self.db.users_get_record_by_id(self.user.id)
         self.update_entries()
-        self.feedback_lbl["text"] = "Successfully Updated Credentials"
+        tk.messagebox.showinfo("Successfully Updated Credentials", "Successfully Updated Credentials")
 
     def change_name(self):
         record = UserRecord()
         record.fill(id=self.user.id, name=self.name_ent.get(), username=self.user.username, hashed_password=self.user.hashed_password)
         self.db.users_update(record)
-        self.feedback_lbl["text"] = "Successfully Updated Name"
+        tk.messagebox.showinfo("Successfully Updated Name", "Successfully Updated Name")
 
         self.user = self.db.users_get_record_by_id(self.user.id)
         self.update_entries()

@@ -46,7 +46,7 @@ class RegisterUser:
 
         ttk.Label(self.frame, text="User Registration", style="TitleLabel.TLabel").place(x=400, y=30, anchor="center")
 
-        self.feedback_lbl = ttk.Label(self.frame, text="...", style="FeedbackLabel.TLabel")
+        self.feedback_lbl = ttk.Label(self.frame, text="", style="FeedbackLabel.TLabel")
         self.feedback_lbl.place(x=50, y=30)
 
         # name

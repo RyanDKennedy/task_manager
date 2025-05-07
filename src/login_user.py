@@ -30,9 +30,6 @@ class LoginUser:
         # Title Label 
         style.configure("TitleLabel.TLabel", font=("Segoe UI", 20, "bold"))
 
-        # Feedback Label 
-        style.configure("FeedbackLabel.TLabel", font=("Segoe UI", 9, "italic"))
-
         # Field Labels 
         style.configure("FieldLabel.TLabel", font=("Segoe UI", 20), foreground="#444")
 
@@ -45,9 +42,6 @@ class LoginUser:
 
 
         ttk.Label(self.frame, text="User Login", style="TitleLabel.TLabel").place(x=400, y=30, anchor="center")
-
-        self.feedback_lbl = ttk.Label(self.frame, text="...", style="FeedbackLabel.TLabel")
-        self.feedback_lbl.place(x=50, y=30)
 
         # Username label 
         ttk.Label(self.frame, text="Username:", style="FieldLabel.TLabel").place(x=100, y=150)
@@ -72,7 +66,7 @@ class LoginUser:
         matched_users = self.db.users_get_records_with_username_and_hashed_password(record.username, record.hashed_password)
 
         if (len(matched_users) == 0):
-            self.feedback_lbl["text"] = "Invalid Credentials"
+            tk.messagebox.showerror("Failed to Login", "Invalid Login Credentials");
             return
 
         self.hide()
@@ -87,7 +81,6 @@ class LoginUser:
         self.password_ent.delete(0, "end")
 
     def show(self):
-        self.feedback_lbl["text"] = ""
         self.clear_entries()
         self.frame.place(x=0,y=0,width=1000,height=1000)
 
